@@ -1,4 +1,4 @@
-# Python
+# python
 __pycache__/
 *.py[cod]
 *$py.class
@@ -20,7 +20,7 @@ wheels/
 .installed.cfg
 *.egg
 
-# Virtual Environment
+# virtual Environment
 venv/
 env/
 ENV/
@@ -34,24 +34,24 @@ ENV/
 *~
 .DS_Store
 
-# Jupyter Notebook
+# jupyter Notebook
 .ipynb_checkpoints
 
-# Output files
+# output files
 maps/*.html
 
-# Keep directories but not their contents
+# keep directories but not their contents
 !maps/.gitkeep
 !data/.gitkeep
 
 # OSM data files (large)
 *.osm
 *.osm.bz2
-# Keep .pbf files as they're needed
+# keep .pbf files as they're needed
 # *.osm.pbf
 
-# Logs
+# logs
 *.log
 
-# Environment variables
+# environment variables
 .env
