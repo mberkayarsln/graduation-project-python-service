@@ -12,38 +12,63 @@ def haversine(lat1, lon1, lat2, lon2):
     return 2 * r * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
 
-def compute_distance_matrix(points, use_traffic=False, api_key=None, departure_time=None):
+def compute_distance_matrix(points, use_traffic=False, api_key=None, departure_time=None, k_nearest=5):
     n = len(points)
     matrix = [[0] * n for _ in range(n)]
     
+    haversine_matrix = [[0.0] * n for _ in range(n)]
+    for i in range(n):
+        for j in range(i + 1, n):
+            dist = haversine(*points[i], *points[j])
+            haversine_matrix[i][j] = dist
+            haversine_matrix[j][i] = dist
+    
     if use_traffic and api_key:
         from traffic_router import get_route_with_traffic
-        print(f"    computing traffic-aware distance matrix...")
+        
+        print(f"    optimized traffic-aware matrix (k={k_nearest} nearest neighbors per node)...")
+        
+        api_calls = 0
+        total_possible = n * (n - 1) // 2
         
         for i in range(n):
-            for j in range(n):
-                if i != j:
+            distances = [(j, haversine_matrix[i][j]) for j in range(n) if j > i]
+            distances.sort(key=lambda x: x[1])
+            
+            nearest_count = min(k_nearest, len(distances))
+            nearest_neighbors = [j for j, _ in distances[:nearest_count]]
+            
+            for j in range(i + 1, n):
+                if j in nearest_neighbors:
                     try:
                         result = get_route_with_traffic(
                             [points[i], points[j]], 
                             api_key, 
                             departure_time
                         )
-                        # matrix[i][j] = int(result['distance_km'] * 1000)
-                        matrix[i][j] = int(result['duration_with_traffic_min'] * 60)
+                        duration = int(result['duration_with_traffic_min'] * 60)
+                        matrix[i][j] = duration
+                        matrix[j][i] = duration
+                        api_calls += 1
                     except Exception as e:
-                        print(f"    falling back to haversine for {i}->{j}: {e}")
-                        matrix[i][j] = int(haversine(*points[i], *points[j]))
+                        dist = int(haversine_matrix[i][j])
+                        matrix[i][j] = dist
+                        matrix[j][i] = dist
+                else:
+                    dist = int(haversine_matrix[i][j])
+                    matrix[i][j] = dist
+                    matrix[j][i] = dist
+        
+        print(f"    API calls: {api_calls}/{total_possible} (%{(api_calls/total_possible)*100:.1f} of possible)")
     else:
         for i in range(n):
             for j in range(n):
-                if i != j:
-                    matrix[i][j] = int(haversine(*points[i], *points[j]))
+                matrix[i][j] = int(haversine_matrix[i][j])
     
     return matrix
 
 
-def optimize_tsp(points, office=None, use_traffic=False, api_key=None, departure_time=None):
+def optimize_tsp(points, office=None, use_traffic=False, api_key=None, departure_time=None, k_nearest=5):
     all_points = points + [office] if office else points
     n = len(all_points)
     
@@ -51,7 +76,8 @@ def optimize_tsp(points, office=None, use_traffic=False, api_key=None, departure
         all_points, 
         use_traffic=use_traffic, 
         api_key=api_key, 
-        departure_time=departure_time
+        departure_time=departure_time,
+        k_nearest=k_nearest
     )
     
     manager = pywrapcp.RoutingIndexManager(n, 1, 0)

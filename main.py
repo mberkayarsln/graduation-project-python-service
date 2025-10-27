@@ -58,7 +58,8 @@ def main():
                 office=OFFICE_LOCATION,
                 use_traffic=USE_TRAFFIC,
                 api_key=TOMTOM_API_KEY if USE_TRAFFIC else None,
-                departure_time=DEPARTURE_TIME if USE_TRAFFIC else None
+                departure_time=DEPARTURE_TIME if USE_TRAFFIC else None,
+                k_nearest=5
             )
             
             all_routes.append((cluster_id, optimized_route))
