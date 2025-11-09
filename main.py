@@ -1,6 +1,6 @@
 from generate_data import generate_points
 from kmeans_cluster import cluster_points
-from optimize_route import optimize_tsp
+from optimize_route import optimize_tsp, haversine
 from draw_route import draw_route, get_route
 from traffic_router import get_route_with_traffic
 import folium
@@ -43,15 +43,80 @@ def main():
     df, centers = cluster_points(df, k=NUM_CLUSTERS, random_state=42)
     print(f"created {NUM_CLUSTERS} clusters")
     
+    MAX_DISTANCE_FROM_CENTER = 2000  # 2km in meters
+    df['excluded'] = False
+    
+    for cluster_id in range(NUM_CLUSTERS):
+        cluster_mask = df['cluster'] == cluster_id
+        center = centers[cluster_id]
+        
+        for idx in df[cluster_mask].index:
+            distance = haversine(df.loc[idx, 'lat'], df.loc[idx, 'lon'], center[0], center[1])
+            if distance > MAX_DISTANCE_FROM_CENTER:
+                df.loc[idx, 'excluded'] = True
+    
+    print(f"\ncreating points visualization with excluded points...")
+    m_points = folium.Map(location=[df['lat'].mean(), df['lon'].mean()], zoom_start=11)
+    
+    colors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', 
+              '#ec4899', '#14b8a6', '#06b6d4', '#84cc16', '#f97316']
+    
+    for cluster_id, center in enumerate(centers):
+        color = colors[cluster_id % len(colors)]
+        folium.Marker(
+            location=[center[0], center[1]],
+            popup=f"<b>Cluster {cluster_id} Center</b>",
+            icon=folium.Icon(color='black', icon='star', prefix='fa')
+        ).add_to(m_points)
+        
+        folium.Circle(
+            location=[center[0], center[1]],
+            radius=2000,  # 2km
+            color=color,
+            fill=False,
+            weight=2,
+            opacity=0.5,
+            popup=f"2km radius - Cluster {cluster_id}"
+        ).add_to(m_points)
+    
+    for _, row in df.iterrows():
+        if row['excluded']:
+            folium.CircleMarker(
+                location=[row['lat'], row['lon']],
+                radius=4,
+                color='#6b7280',  # Gray for excluded
+                fill=True,
+                fill_opacity=0.6,
+                popup=f"<b>Employee {row['id']}</b><br>Cluster {int(row['cluster'])}<br><span style='color:gray'>EXCLUDED (>2km)</span>"
+            ).add_to(m_points)
+        else:
+            color = colors[int(row['cluster']) % len(colors)]
+            folium.CircleMarker(
+                location=[row['lat'], row['lon']],
+                radius=4,
+                color=color,
+                fill=True,
+                fill_opacity=0.8,
+                popup=f"<b>Employee {row['id']}</b><br>Cluster {int(row['cluster'])}<br>Included in route"
+            ).add_to(m_points)
+    
+    m_points.save("maps/generated_points.html")
+    print(f"points map saved to: maps/generated_points.html")
+    
+    total_excluded = df['excluded'].sum()
+    print(f"total excluded points: {total_excluded} / {len(df)}")
+    
     print(f"\noptimizing routes for each cluster...")
     all_routes = []
     
     for cluster_id in range(NUM_CLUSTERS):
-        cluster_df = df[df['cluster'] == cluster_id]
+        cluster_df = df[(df['cluster'] == cluster_id) & (df['excluded'] == False)]
+        all_in_cluster = len(df[df['cluster'] == cluster_id])
         points = list(zip(cluster_df['lat'], cluster_df['lon']))
         
         if len(points) > 0:
-            print(f"  cluster {cluster_id}: {len(points)} employees", end=" → ")
+            excluded_count = all_in_cluster - len(points)
+            print(f"  cluster {cluster_id}: {all_in_cluster} employees ({excluded_count} excluded, {len(points)} within 2km)", end=" → ")
             
             optimized_route = optimize_tsp(
                 points, 
