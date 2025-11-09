@@ -19,10 +19,10 @@ def main():
     
     USE_TRAFFIC = True
     TOMTOM_API_KEY = os.getenv('TOMTOM_API_KEY')
-    tomorrow_7am = datetime.now().replace(hour=7, minute=0, second=0, microsecond=0)
-    if datetime.now().hour >= 7:
-        tomorrow_7am += timedelta(days=1)
-    DEPARTURE_TIME = tomorrow_7am
+    tomorrow_8am = datetime.now().replace(hour=8, minute=0, second=0, microsecond=0)
+    if datetime.now().hour >= 8:
+        tomorrow_8am += timedelta(days=1)
+    DEPARTURE_TIME = tomorrow_8am
     
     if USE_TRAFFIC and not TOMTOM_API_KEY:
         print("warning: TOMTOM_API_KEY not found in .env file")

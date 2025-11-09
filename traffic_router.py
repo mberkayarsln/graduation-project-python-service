@@ -1,10 +1,18 @@
 import requests
 from datetime import datetime
+from api_cache import APICache
+
+
+cache = APICache()
 
 
 def get_route_with_traffic(points, api_key, departure_time=None):
     if departure_time is None:
         departure_time = datetime.now()
+    
+    cached_result = cache.get(points, departure_time)
+    if cached_result is not None:
+        return cached_result
     
     locations = ':'.join([f"{lat},{lon}" for lat, lon in points])
     
@@ -44,7 +52,7 @@ def get_route_with_traffic(points, api_key, departure_time=None):
         
         traffic_delay = duration_with_traffic - duration_no_traffic
         
-        return {
+        result = {
             'coordinates': route_coords,
             'distance_km': dist_km,
             'duration_no_traffic_min': duration_no_traffic,
@@ -52,6 +60,10 @@ def get_route_with_traffic(points, api_key, departure_time=None):
             'traffic_delay_min': traffic_delay,
             'departure_time': departure_time
         }
+        
+        cache.set(points, departure_time, result)
+        
+        return result
     
     except requests.exceptions.RequestException as e:
         print(f"TomTom API error: {e}")

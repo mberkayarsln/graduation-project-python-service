@@ -55,3 +55,6 @@ maps/*.html
 
 # environment variables
 .env
+
+# API cache
+data/api_cache.json
