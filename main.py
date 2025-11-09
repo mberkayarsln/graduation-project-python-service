@@ -14,7 +14,7 @@ load_dotenv()
 def main():
     
     OFFICE_LOCATION = (41.1097, 29.0204)
-    NUM_EMPLOYEES = 100
+    NUM_EMPLOYEES = 200
     NUM_CLUSTERS = 10
     
     USE_TRAFFIC = True
