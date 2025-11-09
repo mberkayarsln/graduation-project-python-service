@@ -12,7 +12,7 @@ def generate_points(n=100, seed=42, show_map=True):
 
     landuse = osm.get_data_by_custom_criteria(
         custom_filter={
-            "landuse": ["residential", "commercial"]
+            "landuse": ["residential"]
         },
         filter_type="keep",
         keep_nodes=False,
