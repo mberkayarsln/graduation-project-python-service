@@ -1,256 +1,253 @@
-from generate_data import generate_points
-from kmeans_cluster import cluster_points
-from optimize_route import optimize_tsp, haversine
-from draw_route import draw_route, get_route
-from traffic_router import get_route_with_traffic
-import folium
-from datetime import datetime, timedelta
-import os
-from dotenv import load_dotenv
+"""
+Ana uygulama dosyası - Servis rota optimizasyonu
+"""
+from config import Config
+from utils import print_section_header, print_summary
+from modules.generate_data import generate_points
+from modules.kmeans_cluster import cluster_points
+from modules.optimize_route import optimize_tsp
+from modules.draw_route import draw_route
+from modules.traffic_router import get_route_with_traffic
+import visualizer
+import pandas as pd
 
-load_dotenv()
 
-
-def main():
+def filter_employees_by_distance(df, centers, max_distance):
+    """
+    Merkeze uzak çalışanları filtreler
     
-    OFFICE_LOCATION = (41.1097, 29.0204)
-    NUM_EMPLOYEES = 200
-    NUM_CLUSTERS = 10
+    Args:
+        df: Çalışan dataframe
+        centers: Cluster merkez noktaları
+        max_distance: Maksimum mesafe (metre)
     
-    USE_TRAFFIC = True
-    TOMTOM_API_KEY = os.getenv('TOMTOM_API_KEY')
-    tomorrow_8am = datetime.now().replace(hour=8, minute=0, second=0, microsecond=0)
-    if datetime.now().hour >= 8:
-        tomorrow_8am += timedelta(days=1)
-    DEPARTURE_TIME = tomorrow_8am
+    Returns:
+        df: Güncellenmiş dataframe (excluded kolonuyla)
+    """
+    from utils import haversine
     
-    if USE_TRAFFIC and not TOMTOM_API_KEY:
-        print("warning: TOMTOM_API_KEY not found in .env file")
-        print("traffic analysis will be disabled")
-        USE_TRAFFIC = False
-    
-    print("starting route optimization system...")
-    print(f"traffic analysis: {'enabled ✓' if USE_TRAFFIC else 'disabled ✗'}")
-    if USE_TRAFFIC:
-        print(f"departure time: {DEPARTURE_TIME.strftime('%Y-%m-%d %H:%M')}")
-    
-    print(f"\ngenerating {NUM_EMPLOYEES} random employee locations...")
-    df = generate_points(n=NUM_EMPLOYEES, seed=42, show_map=True)
-    print(f"generated {len(df)} points")
-    print(f"map saved to: maps/generated_points.html")
-    
-    print(f"\nclustering employees into {NUM_CLUSTERS} groups...")
-    df, centers = cluster_points(df, k=NUM_CLUSTERS, random_state=42)
-    print(f"created {NUM_CLUSTERS} clusters")
-    
-    MAX_DISTANCE_FROM_CENTER = 2000  # 2km in meters
     df['excluded'] = False
     
-    for cluster_id in range(NUM_CLUSTERS):
+    for cluster_id in range(len(centers)):
         cluster_mask = df['cluster'] == cluster_id
         center = centers[cluster_id]
         
         for idx in df[cluster_mask].index:
-            distance = haversine(df.loc[idx, 'lat'], df.loc[idx, 'lon'], center[0], center[1])
-            if distance > MAX_DISTANCE_FROM_CENTER:
+            distance = haversine(
+                df.loc[idx, 'lat'], 
+                df.loc[idx, 'lon'], 
+                center[0], 
+                center[1]
+            )
+            if distance > max_distance:
                 df.loc[idx, 'excluded'] = True
     
-    print(f"\ncreating points visualization with excluded points...")
-    m_points = folium.Map(location=[df['lat'].mean(), df['lon'].mean()], zoom_start=11)
+    return df
+
+
+def optimize_cluster_routes(df, centers, config):
+    """
+    Her cluster için rota optimizasyonu yapar
     
-    colors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', 
-              '#ec4899', '#14b8a6', '#06b6d4', '#84cc16', '#f97316']
+    Args:
+        df: Çalışan dataframe
+        centers: Cluster merkez noktaları
+        config: Konfigurasyon objesi
     
-    for cluster_id, center in enumerate(centers):
-        color = colors[cluster_id % len(colors)]
-        folium.Marker(
-            location=[center[0], center[1]],
-            popup=f"<b>Cluster {cluster_id} Center</b>",
-            icon=folium.Icon(color='black', icon='star', prefix='fa')
-        ).add_to(m_points)
-        
-        folium.Circle(
-            location=[center[0], center[1]],
-            radius=2000,  # 2km
-            color=color,
-            fill=False,
-            weight=2,
-            opacity=0.5,
-            popup=f"2km radius - Cluster {cluster_id}"
-        ).add_to(m_points)
+    Returns:
+        list: [(cluster_id, optimized_route), ...]
+    """
+    print_section_header("ROTA OPTİMİZASYONU")
     
-    for _, row in df.iterrows():
-        if row['excluded']:
-            folium.CircleMarker(
-                location=[row['lat'], row['lon']],
-                radius=4,
-                color='#6b7280',  # Gray for excluded
-                fill=True,
-                fill_opacity=0.6,
-                popup=f"<b>Employee {row['id']}</b><br>Cluster {int(row['cluster'])}<br><span style='color:gray'>EXCLUDED (>2km)</span>"
-            ).add_to(m_points)
-        else:
-            color = colors[int(row['cluster']) % len(colors)]
-            folium.CircleMarker(
-                location=[row['lat'], row['lon']],
-                radius=4,
-                color=color,
-                fill=True,
-                fill_opacity=0.8,
-                popup=f"<b>Employee {row['id']}</b><br>Cluster {int(row['cluster'])}<br>Included in route"
-            ).add_to(m_points)
-    
-    m_points.save("maps/generated_points.html")
-    print(f"points map saved to: maps/generated_points.html")
-    
-    total_excluded = df['excluded'].sum()
-    print(f"total excluded points: {total_excluded} / {len(df)}")
-    
-    print(f"\noptimizing routes for each cluster...")
     all_routes = []
     
-    for cluster_id in range(NUM_CLUSTERS):
+    for cluster_id in range(config.NUM_CLUSTERS):
+        # Hariç tutulmayanları al
         cluster_df = df[(df['cluster'] == cluster_id) & (df['excluded'] == False)]
         all_in_cluster = len(df[df['cluster'] == cluster_id])
         points = list(zip(cluster_df['lat'], cluster_df['lon']))
         
         if len(points) > 0:
             excluded_count = all_in_cluster - len(points)
-            print(f"  cluster {cluster_id}: {all_in_cluster} employees ({excluded_count} excluded, {len(points)} within 2km)", end=" → ")
+            print(f"Cluster {cluster_id}: {len(points)} çalışan (hariç: {excluded_count})", end=" → ")
             
             optimized_route = optimize_tsp(
                 points, 
-                office=OFFICE_LOCATION,
-                use_traffic=USE_TRAFFIC,
-                api_key=TOMTOM_API_KEY if USE_TRAFFIC else None,
-                departure_time=DEPARTURE_TIME if USE_TRAFFIC else None,
+                office=config.OFFICE_LOCATION,
+                use_traffic=config.USE_TRAFFIC,
+                api_key=config.TOMTOM_API_KEY if config.USE_TRAFFIC else None,
+                departure_time=config.get_departure_time() if config.USE_TRAFFIC else None,
                 k_nearest=5
             )
             
             all_routes.append((cluster_id, optimized_route))
-            print(f"{len(optimized_route)} stops")
+            print(f"{len(optimized_route)} durak")
+        else:
+            print(f"Cluster {cluster_id}: Boş (tüm çalışanlar hariç tutuldu)")
     
-    print(f"\ncreating visualization...")
+    return all_routes
+
+
+def create_all_maps(df, centers, all_routes, config):
+    """
+    Tüm haritaları oluşturur
     
-    m = folium.Map(location=[df['lat'].mean(), df['lon'].mean()], zoom_start=11)
+    Args:
+        df: Çalışan dataframe
+        centers: Cluster merkez noktaları
+        all_routes: Optimize edilmiş rotalar
+        config: Konfigurasyon objesi
     
-    colors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', 
-              '#ec4899', '#14b8a6', '#06b6d4', '#84cc16', '#f97316']
+    Returns:
+        list: Oluşturulan dosya isimleri
+    """
+    print_section_header("HARİTALAR OLUŞTURULUYOR")
     
+    output_files = []
+    
+    # 1. Çalışan konumları haritası
+    print("1. Çalışan konumları haritası oluşturuluyor...")
+    employees = [{'lat': row['lat'], 'lon': row['lon'], 'id': row['id']} 
+                 for _, row in df.iterrows()]
+    emp_file = visualizer.create_employees_map(employees, config.OFFICE_LOCATION)
+    output_files.append(emp_file)
+    print(f"   ✓ {emp_file}")
+    
+    # 2. Cluster haritası
+    print("2. Cluster haritası oluşturuluyor...")
+    employees_with_clusters = [
+        {'lat': row['lat'], 'lon': row['lon'], 'cluster': int(row['cluster']), 'id': row['id']} 
+        for _, row in df.iterrows()
+    ]
+    cluster_file = visualizer.create_cluster_map(
+        employees_with_clusters, 
+        centers, 
+        config.OFFICE_LOCATION
+    )
+    output_files.append(cluster_file)
+    print(f"   ✓ {cluster_file}")
+    
+    # 3. Optimized routes haritası
+    if all_routes:
+        print("3. Optimize edilmiş rotalar haritası oluşturuluyor...")
+        
+        routes_dict = {}
+        for cluster_id, route in all_routes:
+            if config.USE_TRAFFIC and config.TOMTOM_API_KEY:
+                try:
+                    result = get_route_with_traffic(
+                        route, 
+                        config.TOMTOM_API_KEY, 
+                        config.get_departure_time()
+                    )
+                    routes_dict[cluster_id] = {
+                        'coordinates': result['coordinates'],  # OSRM rota çizgisi
+                        'stops': route,  # Gerçek durak noktaları
+                        'distance_km': result['distance_km'],
+                        'duration_min': result['duration_with_traffic_min']
+                    }
+                except Exception as e:
+                    print(f"   ⚠ Cluster {cluster_id} için trafik bilgisi alınamadı: {e}")
+                    from utils import calculate_route_stats
+                    stats = calculate_route_stats(route)
+                    routes_dict[cluster_id] = {
+                        'coordinates': route,  # Basit çizgi için aynı noktalar
+                        'stops': route,  # Gerçek durak noktaları
+                        'distance_km': stats['distance_km'],
+                        'duration_min': stats['duration_min']
+                    }
+            else:
+                from utils import calculate_route_stats
+                stats = calculate_route_stats(route)
+                routes_dict[cluster_id] = {
+                    'coordinates': route,  # Basit çizgi için aynı noktalar
+                    'stops': route,  # Gerçek durak noktaları
+                    'distance_km': stats['distance_km'],
+                    'duration_min': stats['duration_min']
+                }
+        
+        routes_file = visualizer.create_routes_map(
+            routes_dict,
+            config.OFFICE_LOCATION,
+            centers,
+            employees_with_clusters
+        )
+        output_files.append(routes_file)
+        print(f"   ✓ {routes_file}")
+        
+        # 4. İlk cluster detay haritası
+        if all_routes:
+            print("4. Cluster 0 detay haritası oluşturuluyor...")
+            draw_route(all_routes[0][1], file_path=config.MAP_CLUSTER_DETAIL)
+            output_files.append(config.MAP_CLUSTER_DETAIL)
+            print(f"   ✓ {config.MAP_CLUSTER_DETAIL}")
+    
+    return output_files
+
+
+def main():
+    """Ana program akışı"""
+    
+    # Konfigürasyonu yükle
+    config = Config()
+    
+    # Başlık
+    print_section_header("SERVİS ROTA OPTİMİZASYONU")
+    print(f"Çalışan Sayısı: {config.NUM_EMPLOYEES}")
+    print(f"Cluster Sayısı: {config.NUM_CLUSTERS}")
+    print(f"Trafik Analizi: {'✓ Aktif' if config.USE_TRAFFIC else '✗ Pasif'}")
+    
+    if config.USE_TRAFFIC:
+        if config.TOMTOM_API_KEY:
+            departure = config.get_departure_time()
+            print(f"Kalkış Saati: {departure.strftime('%Y-%m-%d %H:%M')}")
+        else:
+            print("⚠ TOMTOM_API_KEY bulunamadı - Trafik analizi devre dışı")
+            config.USE_TRAFFIC = False
+    
+    # 1. Çalışan konumları oluştur
+    print_section_header("ÇALIŞAN KONUMLARI OLUŞTURULUYOR")
+    df = generate_points(n=config.NUM_EMPLOYEES, seed=42, show_map=False)
+    print(f"✓ {len(df)} çalışan konumu oluşturuldu")
+    
+    # 2. Clustering yap
+    print_section_header("CLUSTERING")
+    df, centers = cluster_points(df, k=config.NUM_CLUSTERS, random_state=42)
+    print(f"✓ {config.NUM_CLUSTERS} cluster oluşturuldu")
+    
+    # 3. Merkeze uzak çalışanları filtrele
+    df = filter_employees_by_distance(df, centers, config.MAX_DISTANCE_FROM_CENTER)
+    excluded_count = df['excluded'].sum()
+    print(f"✓ {excluded_count} çalışan hariç tutuldu (>{config.MAX_DISTANCE_FROM_CENTER/1000}km)")
+    
+    # 4. Her cluster için rota optimizasyonu
+    all_routes = optimize_cluster_routes(df, centers, config)
+    
+    # 5. Haritaları oluştur
+    output_files = create_all_maps(df, centers, all_routes, config)
+    
+    # 6. İstatistikleri hesapla ve göster
     total_distance = 0
-    total_duration_no_traffic = 0
-    total_duration_with_traffic = 0
-    total_traffic_delay = 0
+    total_duration = 0
     
     for cluster_id, route in all_routes:
-        color = colors[cluster_id % len(colors)]
-        
-        try:
-            if USE_TRAFFIC:
-                result = get_route_with_traffic(route, TOMTOM_API_KEY, DEPARTURE_TIME)
-                route_coords = result['coordinates']
-                km = result['distance_km']
-                mins_no_traffic = result['duration_no_traffic_min']
-                mins_with_traffic = result['duration_with_traffic_min']
-                traffic_delay = result['traffic_delay_min']
-                
-                total_distance += km
-                total_duration_no_traffic += mins_no_traffic
-                total_duration_with_traffic += mins_with_traffic
-                total_traffic_delay += traffic_delay
-                
-                popup_text = f"""
-                <b>cluster {cluster_id}</b><br>
-                distance: {km:.1f} km<br>
-                <hr>
-                <span style='color: green'>no traffic: {mins_no_traffic:.0f} min</span><br>
-                <span style='color: orange'>with traffic: {mins_with_traffic:.0f} min</span><br>
-                <span style='color: red'>delay: +{traffic_delay:.0f} min</span>
-                """
-            else:
-                route_coords, km, mins = get_route(route)
-                total_distance += km
-                total_duration_no_traffic += mins
-                
-                popup_text = f"<b>cluster {cluster_id}</b><br>{km:.1f} km<br>{mins:.0f} min"
-            
-            folium.PolyLine(
-                route_coords,
-                color=color,
-                weight=4,
-                opacity=0.7,
-                popup=folium.Popup(popup_text, max_width=250)
-            ).add_to(m)
-            
-        except Exception as e:
-            print(f"  could not get detailed route for cluster {cluster_id}: {e}")
-            folium.PolyLine(
-                route,
-                color=color,
-                weight=3,
-                opacity=0.5,
-                popup=f"cluster {cluster_id} (simple)"
-            ).add_to(m)
-        
-        for i, (lat, lon) in enumerate(route[:-1]):
-            folium.CircleMarker(
-                location=[lat, lon],
-                radius=4,
-                color=color,
-                fill=True,
-                fill_opacity=0.8,
-                popup=f"<b>cluster {cluster_id}</b><br>stop {i+1}"
-            ).add_to(m)
+        from utils import calculate_route_stats
+        stats = calculate_route_stats(route)
+        total_distance += stats['distance_km']
+        total_duration += stats['duration_min']
     
-    folium.Marker(
-        location=OFFICE_LOCATION,
-        popup="<b>office (destination)</b>",
-        icon=folium.Icon(color='red', icon='building', prefix='fa')
-    ).add_to(m)
+    summary_stats = {
+        'total_employees': len(df),
+        'num_clusters': config.NUM_CLUSTERS,
+        'active_routes': len(all_routes),
+        'excluded': int(excluded_count),
+        'total_distance': total_distance,
+        'total_duration': total_duration,
+        'use_traffic': config.USE_TRAFFIC,
+        'output_files': output_files
+    }
     
-    m.save("maps/all_clusters_to_office.html")
-    print(f"master map saved to: maps/all_clusters_to_office.html")
-    
-    if all_routes:
-        print(f"\ndrawing detailed route for cluster 0...")
-        draw_route(all_routes[0][1], file_path='maps/cluster_0_route.html')
-        print(f"detailed route saved to: maps/cluster_0_route.html")
-    
-    print("\n" + "="*70)
-    print("route optimization complete!")
-    print("="*70)
-    print(f"\nsummary:")
-    print(f"  • total employees: {len(df)}")
-    print(f"  • number of clusters: {NUM_CLUSTERS}")
-    print(f"  • total routes: {len(all_routes)}")
-    
-    if total_distance > 0:
-        print(f"  • total distance: {total_distance:.1f} km")
-        
-        if USE_TRAFFIC:
-            print(f"\ntraffic analysis:")
-            print(f"  • duration (no traffic): {total_duration_no_traffic:.0f} min ({total_duration_no_traffic/60:.1f} hours)")
-            print(f"  • duration (with traffic): {total_duration_with_traffic:.0f} min ({total_duration_with_traffic/60:.1f} hours)")
-            print(f"  • total traffic delay: +{total_traffic_delay:.0f} min ({total_traffic_delay/60:.1f} hours)")
-            
-            if total_duration_no_traffic > 0:
-                impact = (total_traffic_delay/total_duration_no_traffic)*100
-                print(f"  • traffic impact: +{impact:.1f}%")
-                
-                if impact < 20:
-                    print(f"  • traffic status: 🟢 light traffic")
-                elif impact < 40:
-                    print(f"  • traffic status: 🟡 moderate traffic")
-                else:
-                    print(f"  • traffic status: 🔴 heavy traffic")
-        else:
-            print(f"  • total duration: {total_duration_no_traffic:.0f} min ({total_duration_no_traffic/60:.1f} hours)")
-    
-    print(f"\noutput files:")
-    print(f"  • maps/generated_points.html - employee locations")
-    print(f"  • maps/all_clusters_to_office.html - all optimized routes")
-    print(f"  • maps/cluster_0_route.html - detailed view of first cluster")
-    print("="*70)
+    print_summary(summary_stats)
 
 
 if __name__ == "__main__":
