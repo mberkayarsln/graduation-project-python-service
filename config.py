@@ -15,12 +15,12 @@ class Config:
     OFFICE_LOCATION = (41.1097, 29.0204)
     
     # Çalışan ve cluster ayarları
-    NUM_EMPLOYEES = 200
+    NUM_EMPLOYEES = 100
     NUM_CLUSTERS = 10
     MAX_DISTANCE_FROM_CENTER = 2000  # metre cinsinden (2km)
     
     # Trafik API ayarları
-    USE_TRAFFIC = True
+    USE_TRAFFIC = False
     TOMTOM_API_KEY = os.getenv('TOMTOM_API_KEY')
     
     # Kalkış saati (yarın sabah 8)
