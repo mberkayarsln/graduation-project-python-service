@@ -104,10 +104,32 @@ class TSPOptimizer:
 
             print(f"    API calls: {api_calls}/{total_possible} (%{(api_calls/total_possible)*100:.1f} of possible)")
         else:
-            # Sadece Haversine kullan
+            # Trafiksiz mod: OSRM mesafelerini kullan
+            from modules.osrm_router import OSRMRouter
+            osrm = OSRMRouter()
+            
+            print(f"    building distance matrix with OSRM (road distances for all pairs)...")
+            
+            api_calls = 0
+            total_possible = n * (n - 1) // 2
+            
+            # Tüm i<j çiftleri için OSRM çağrısı yap
             for i in range(n):
-                for j in range(n):
-                    matrix[i][j] = int(haversine_matrix[i][j])
+                for j in range(i + 1, n):
+                    try:
+                        result = osrm.get_route([points[i], points[j]])
+                        # OSRM mesafe km cinsinden döndürür, metre'ye çevir
+                        distance_meters = int(result['distance_km'] * 1000)
+                        matrix[i][j] = distance_meters
+                        matrix[j][i] = distance_meters
+                        api_calls += 1
+                    except Exception as e:
+                        # OSRM başarısız olursa Haversine kullan
+                        print(f"    Warning: OSRM call failed for pair ({i},{j}): {e}")
+                        matrix[i][j] = int(haversine_matrix[i][j])
+                        matrix[j][i] = int(haversine_matrix[i][j])
+            
+            print(f"    OSRM calls: {api_calls}/{total_possible} (%{(api_calls/total_possible)*100:.1f} of possible)")
         
         self.distance_matrix = matrix
         return matrix

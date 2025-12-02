@@ -16,7 +16,7 @@ class TrafficRouter:
             cache_enabled: Cache kullan
         """
         self.api_key = api_key
-        self.cache = APICache() if cache_enabled else None
+        self.cache = APICache(cache_file='data/tomtom_cache.json') if cache_enabled else None
         self.base_url = "https://api.tomtom.com/routing/1/calculateRoute"
     
     def get_route_with_traffic(self, points, departure_time=None):

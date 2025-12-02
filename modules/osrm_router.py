@@ -2,6 +2,7 @@
 OSRMRouter - OSRM API ile rota çizgisi alma
 """
 import requests
+from modules.api_cache import APICache
 
 
 class OSRMRouter:
@@ -10,12 +11,14 @@ class OSRMRouter:
     Ücretsiz, trafik bilgisi yok
     """
     
-    def __init__(self, base_url="https://router.project-osrm.org"):
+    def __init__(self, base_url="https://router.project-osrm.org", cache_enabled=True):
         """
         Args:
             base_url: OSRM sunucu URL'i
+            cache_enabled: Cache kullan
         """
         self.base_url = base_url
+        self.cache = APICache(cache_file='data/osrm_cache.json') if cache_enabled else None
     
     def get_route(self, points, profile='driving'):
         """
@@ -32,6 +35,12 @@ class OSRMRouter:
                 'duration_min': float
             }
         """
+        # Cache kontrolü (OSRM trafik kullanmaz, departure_time=None)
+        if self.cache:
+            cached_result = self.cache.get(points, departure_time=None)
+            if cached_result is not None:
+                return cached_result
+        
         # OSRM lon,lat formatı kullanır (ters!)
         coords = ';'.join([f"{lon},{lat}" for lat, lon in points])
         url = f"{self.base_url}/route/v1/{profile}/{coords}"
@@ -58,11 +67,17 @@ class OSRMRouter:
             distance_km = route_data['distance'] / 1000
             duration_min = route_data['duration'] / 60
             
-            return {
+            result = {
                 'coordinates': coordinates,
                 'distance_km': distance_km,
                 'duration_min': duration_min
             }
+            
+            # Cache'e kaydet
+            if self.cache:
+                self.cache.set(points, departure_time=None, data=result)
+            
+            return result
             
         except requests.exceptions.RequestException as e:
             print(f"OSRM API error: {e}")
