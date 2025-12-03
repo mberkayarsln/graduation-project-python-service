@@ -46,9 +46,9 @@ class RoutingService:
                 route.coordinates = osrm_data['coordinates']
                 route.distance_km = osrm_data['distance_km']
                 route.duration_min = osrm_data['duration_min']
-                print(f"✓ OSRM route: {route.distance_km:.1f}km, {route.duration_min:.1f}min")
+                print(f"OK: OSRM route: {route.distance_km:.1f}km, {route.duration_min:.1f}min")
             except Exception as e:
-                print(f"✗ OSRM failed: {e}")
+                print(f"ERROR: OSRM failed: {e}")
                 route.calculate_stats_from_stops()
         else:
             route.calculate_stats_from_stops()

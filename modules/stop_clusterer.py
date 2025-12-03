@@ -23,13 +23,13 @@ class StopClusterer:
             osm = OSM(self.osm_file)
             roads = osm.get_network(network_type="driving")
             major_roads = roads[roads['highway'].isin([
-                'motorway', 'trunk', 'primary', 'secondary'
+                'motorway', 'trunk', 'primary', 'secondary', 'tertiary'
             ])]
             
             self._roads = major_roads
             return self._roads
         except Exception as e:
-            print(f"⚠️  Ana yollar yüklenemedi: {e}")
+            print(f"WARNING: Ana yollar yüklenemedi: {e}")
             self._roads = None
             return None
     
@@ -58,7 +58,7 @@ class StopClusterer:
                 return (nearest_point.y, nearest_point.x)  # lat, lon
             
         except Exception as e:
-            print(f"⚠️  Road snapping hatası: {e}")
+            print(f"WARNING: Road snapping hatası: {e}")
         
         return (lat, lon)  # Başarısız, orijinali dön
     

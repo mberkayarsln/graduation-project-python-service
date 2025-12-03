@@ -39,7 +39,7 @@ class TrafficService:
             return True
             
         except Exception as e:
-            print(f"   ⚠ Trafik verisi alınamadı: {e}")
+            print(f"   WARNING: Trafik verisi alınamadı: {e}")
             return False
     
     def add_traffic_data_to_routes(self, routes):

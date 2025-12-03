@@ -61,9 +61,9 @@ class ServicePlanner:
         count = count or self.config.NUM_EMPLOYEES
         seed = seed if seed is not None else 42
         
-        print(f"📍 {count} çalışan konumu oluşturuluyor...")
+        print(f"[1] {count} çalışan konumu oluşturuluyor...")
         self.employees = self.location_service.generate_employees(count, seed)
-        print(f"   ✓ {len(self.employees)} çalışan oluşturuldu")
+        print(f"    OK: {len(self.employees)} çalışan oluşturuldu")
         
         return self.employees
     
@@ -79,13 +79,13 @@ class ServicePlanner:
         """
         num_clusters = num_clusters or self.config.NUM_CLUSTERS
         
-        print(f"🔵 {num_clusters} cluster oluşturuluyor...")
+        print(f"[2] {num_clusters} cluster oluşturuluyor...")
         self.clusters = self.clustering_service.cluster_employees(
             self.employees,
             num_clusters,
             random_state=42
         )
-        print(f"   ✓ {len(self.clusters)} cluster oluşturuldu")
+        print(f"    OK: {len(self.clusters)} cluster oluşturuldu")
         
         return self.clusters
     
@@ -99,12 +99,12 @@ class ServicePlanner:
         max_distance = self.config.MAX_DISTANCE_FROM_CENTER
         total_excluded = 0
         
-        print(f"🔍 Uzak çalışanlar filtreleniyor (max: {max_distance/1000}km)...")
+        print(f"[3] Uzak çalışanlar filtreleniyor (max: {max_distance/1000}km)...")
         for cluster in self.clusters:
             excluded = cluster.filter_by_distance(max_distance)
             total_excluded += excluded
         
-        print(f"   ✓ {total_excluded} çalışan hariç tutuldu")
+        print(f"    OK: {total_excluded} çalışan hariç tutuldu")
         
         return total_excluded
     
@@ -127,7 +127,7 @@ class ServicePlanner:
         min_stops = self.config.MIN_STOPS_PER_CLUSTER
         max_stops = self.config.MAX_STOPS_PER_CLUSTER
         
-        print(f"🚏 Durak noktaları oluşturuluyor (ana yollara yerleştirilecek, hedef: {employees_per_stop} çalışan/durak)...")
+        print(f"[4] Durak noktaları oluşturuluyor (ana yollara yerleştirilecek, hedef: {employees_per_stop} çalışan/durak)...")
         
         for cluster in self.clusters:
             active_employees = cluster.get_active_employees()
@@ -157,7 +157,7 @@ class ServicePlanner:
             print(f"   Cluster {cluster.id}: {stats['n_stops']} durak, "
                   f"avg {stats['avg_load']:.1f} çalışan/durak")
         
-        print(f"   ✓ {total_stops} durak oluşturuldu, {total_employees_assigned} çalışan atandı")
+        print(f"    OK: {total_stops} durak oluşturuldu, {total_employees_assigned} çalışan atandı")
         
         return {
             'total_stops': total_stops,
@@ -178,7 +178,7 @@ class ServicePlanner:
         use_traffic = use_traffic if use_traffic is not None else self.config.USE_TRAFFIC
         
         mode = "duraklar" if use_stops else "çalışan konumları"
-        print(f"🚗 Rotalar optimize ediliyor ({mode}, trafik: {'✓' if use_traffic else '✗'})...")
+        print(f"[5] Rotalar optimize ediliyor ({mode}, trafik: {'ON' if use_traffic else 'OFF'})...")
         
         # Rota optimizasyonu
         # RoutingService'e use_stops parametresini göndereceğiz
@@ -209,13 +209,13 @@ class ServicePlanner:
                 
                 print(f"   Cluster {cluster.id}: {active} çalışan → {n_stops} durak")
         
-        print(f"   ✓ {len(routes)} rota oluşturuldu")
+        print(f"    OK: {len(routes)} rota oluşturuldu")
         
         # Trafik verisi ekle (eğer aktifse)
         if use_traffic and self.traffic_service.is_enabled():
             print(f"🚦 Trafik verileri ekleniyor...")
             success = self.traffic_service.add_traffic_data_to_routes(routes)
-            print(f"   ✓ {success}/{len(routes)} rotaya trafik verisi eklendi")
+            print(f"    OK: {success}/{len(routes)} rotaya trafik verisi eklendi")
         
         return routes
     
@@ -226,7 +226,7 @@ class ServicePlanner:
         Returns:
             list: Vehicle listesi
         """
-        print(f"🚌 Araçlar atanıyor...")
+        print(f"Araçlar atanıyor...")
         
         self.vehicles = []
         for i, cluster in enumerate(self.clusters):
@@ -240,7 +240,7 @@ class ServicePlanner:
             cluster.assign_vehicle(vehicle)
             self.vehicles.append(vehicle)
         
-        print(f"   ✓ {len(self.vehicles)} araç atandı")
+        print(f"    OK: {len(self.vehicles)} araç atandı")
         
         return self.vehicles
     
@@ -251,18 +251,18 @@ class ServicePlanner:
         Returns:
             list: Dosya adları
         """
-        print(f"🗺️  Haritalar oluşturuluyor...")
+        print(f"[6] Haritalar oluşturuluyor...")
         
         files = self.visualization_service.create_all_maps(self.clusters)
         
         # Genel haritalar
-        print(f"   ✓ {files[0]} (çalışanlar)")
-        print(f"   ✓ {files[1]} (cluster'lar)")
-        print(f"   ✓ {files[2]} (rotalar)")
+        print(f"    OK: {files[0]} (çalışanlar)")
+        print(f"    OK: {files[1]} (cluster'lar)")
+        print(f"    OK: {files[2]} (rotalar)")
         
         # Detaylı cluster haritaları
         if len(files) > 3:
-            print(f"   ✓ {len(files) - 3} detaylı cluster haritası oluşturuldu")
+            print(f"    OK: {len(files) - 3} detaylı cluster haritası oluşturuldu")
         
         return files
     
