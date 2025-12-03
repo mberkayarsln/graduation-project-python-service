@@ -1,6 +1,4 @@
-"""
-DataGenerator - Çalışan konumu oluşturucu (OOP)
-"""
+"""Data Generator"""
 import numpy as np
 import pandas as pd
 from shapely.geometry import Point
@@ -9,20 +7,16 @@ from pyrosm import OSM
 
 
 class DataGenerator:
-    """İstanbul'da OSM verisi kullanarak rastgele konum oluşturur"""
+    """Rastgele konum oluştur (OSM)"""
     
     def __init__(self, osm_file="data/istanbul-center.osm.pbf"):
-        """
-        Args:
-            osm_file: OSM PBF dosya yolu
-        """
         self.osm_file = osm_file
         self._osm = None
         self._urban_area = None
         self._bounds = None
     
     def _load_osm_data(self):
-        """OSM verisini yükle (lazy loading)"""
+        """OSM yükle"""
         if self._osm is None:
             self._osm = OSM(self.osm_file)
             
@@ -38,16 +32,7 @@ class DataGenerator:
             self._bounds = landuse.total_bounds
     
     def generate(self, n=100, seed=42):
-        """
-        Rastgele konum oluştur
-        
-        Args:
-            n: Oluşturulacak nokta sayısı
-            seed: Random seed
-        
-        Returns:
-            pandas.DataFrame: id, lat, lon kolonları
-        """
+        """Rastgele konum oluştur"""
         self._load_osm_data()
         
         rng = np.random.default_rng(seed)

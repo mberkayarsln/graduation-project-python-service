@@ -108,30 +108,106 @@ class ServicePlanner:
         
         return total_excluded
     
-    def optimize_routes(self, use_traffic=None):
+    def generate_stops(self):
+        """
+        Her cluster için durak noktaları oluştur (config ayarlarını kullanır)
+        
+        Returns:
+            dict: Durak istatistikleri
+        """
+        from modules.stop_clusterer import StopClusterer
+        
+        # Ana yollara snap aktif
+        stop_clusterer = StopClusterer(snap_to_roads=True)
+        total_stops = 0
+        total_employees_assigned = 0
+        
+        # Config'den parametreleri al
+        employees_per_stop = self.config.EMPLOYEES_PER_STOP
+        min_stops = self.config.MIN_STOPS_PER_CLUSTER
+        max_stops = self.config.MAX_STOPS_PER_CLUSTER
+        
+        print(f"🚏 Durak noktaları oluşturuluyor (ana yollara yerleştirilecek, hedef: {employees_per_stop} çalışan/durak)...")
+        
+        for cluster in self.clusters:
+            active_employees = cluster.get_active_employees()
+            
+            if len(active_employees) == 0:
+                continue
+            
+            # Durakları oluştur (config parametreleriyle)
+            result = stop_clusterer.generate_stops(
+                active_employees,
+                employees_per_stop=employees_per_stop,
+                min_stops=min_stops,
+                max_stops=max_stops
+            )
+            
+            # Cluster'a durakları ata
+            cluster.set_stops(
+                result['stops'],
+                result['assignments'],
+                result['stop_loads']
+            )
+            
+            stats = stop_clusterer.get_stats(result)
+            total_stops += stats['n_stops']
+            total_employees_assigned += stats['total_employees']
+            
+            print(f"   Cluster {cluster.id}: {stats['n_stops']} durak, "
+                  f"avg {stats['avg_load']:.1f} çalışan/durak")
+        
+        print(f"   ✓ {total_stops} durak oluşturuldu, {total_employees_assigned} çalışan atandı")
+        
+        return {
+            'total_stops': total_stops,
+            'total_employees': total_employees_assigned
+        }
+    
+    def optimize_routes(self, use_traffic=None, use_stops=True):
         """
         Tüm rotaları optimize et
         
         Args:
             use_traffic: Trafik verisi kullan (None ise config'den al)
+            use_stops: Durak sistemi kullan
         
         Returns:
             list: Route listesi
         """
         use_traffic = use_traffic if use_traffic is not None else self.config.USE_TRAFFIC
         
-        print(f"🚗 Rotalar optimize ediliyor (trafik: {'✓' if use_traffic else '✗'})...")
+        mode = "duraklar" if use_stops else "çalışan konumları"
+        print(f"🚗 Rotalar optimize ediliyor ({mode}, trafik: {'✓' if use_traffic else '✗'})...")
         
         # Rota optimizasyonu
-        routes = self.routing_service.optimize_all_clusters(
-            self.clusters,
-            use_traffic=use_traffic
-        )
+        # RoutingService'e use_stops parametresini göndereceğiz
+        routes = []
+        api_key = self.config.TOMTOM_API_KEY if use_traffic else None
+        departure_time = self.config.get_departure_time() if use_traffic else None
+        
+        for cluster in self.clusters:
+            route = self.routing_service.optimize_cluster_route(
+                cluster=cluster,
+                use_traffic=use_traffic,
+                api_key=api_key,
+                departure_time=departure_time,
+                use_stops=use_stops
+            )
+            if route:
+                routes.append(route)
         
         for i, cluster in enumerate(self.clusters):
             if cluster.route:
                 active = cluster.get_employee_count(include_excluded=False)
-                print(f"   Cluster {cluster.id}: {active} çalışan → {len(cluster.route.stops)} durak")
+                # Durak sistemi aktifse cluster.stops'u göster, değilse route.stops (ofis hariç)
+                if use_stops and cluster.has_stops():
+                    n_stops = len(cluster.stops)
+                else:
+                    # route.stops ofis dahil, -1 yaparak ofis hariç sayıyı göster
+                    n_stops = len(cluster.route.stops) - 1 if len(cluster.route.stops) > 0 else 0
+                
+                print(f"   Cluster {cluster.id}: {active} çalışan → {n_stops} durak")
         
         print(f"   ✓ {len(routes)} rota oluşturuldu")
         
@@ -179,8 +255,14 @@ class ServicePlanner:
         
         files = self.visualization_service.create_all_maps(self.clusters)
         
-        for file in files:
-            print(f"   ✓ {file}")
+        # Genel haritalar
+        print(f"   ✓ {files[0]} (çalışanlar)")
+        print(f"   ✓ {files[1]} (cluster'lar)")
+        print(f"   ✓ {files[2]} (rotalar)")
+        
+        # Detaylı cluster haritaları
+        if len(files) > 3:
+            print(f"   ✓ {len(files) - 3} detaylı cluster haritası oluşturuldu")
         
         return files
     
@@ -265,14 +347,18 @@ class ServicePlanner:
         # 3. Filtrele
         self.filter_employees_by_distance()
         
-        # 4. Rota optimizasyonu
-        self.optimize_routes()
+        # 4. Durak noktaları oluştur (config ayarlarını kullanır)
+        self.generate_stops()
         
-        # 5. Araç ataması
+        # 5. Rota optimizasyonu (duraklar üzerinden)
+        self.optimize_routes(use_stops=True)
+        
+        # 6. Araç ataması
         self.assign_vehicles()
         
-        # 6. Haritalar
+        # 7. Haritalar
         self.generate_maps()
         
+        # 8. İstatistikler
         # 7. Özet
         self.print_summary()

@@ -1,19 +1,11 @@
-"""
-Vehicle - Araç sınıfı
-"""
+"""Vehicle model"""
 from datetime import datetime
 
 
 class Vehicle:
-    """Servis aracını temsil eder"""
+    """Servis aracı"""
     
     def __init__(self, id, capacity=50, vehicle_type="Minibüs"):
-        """
-        Args:
-            id: Araç ID
-            capacity: Kapasite (kişi)
-            vehicle_type: Araç tipi
-        """
         self.id = id
         self.capacity = capacity
         self.vehicle_type = vehicle_type
@@ -23,17 +15,12 @@ class Vehicle:
         self.driver_name = None
     
     def assign_cluster(self, cluster):
-        """Araca cluster ata"""
+        """Cluster ata"""
         self.cluster = cluster
         self.route = cluster.route if cluster else None
     
     def set_departure_time(self, departure_time):
-        """
-        Kalkış saatini ayarla
-        
-        Args:
-            departure_time: datetime objesi
-        """
+        """Kalkış saati"""
         self.departure_time = departure_time
     
     def set_driver(self, driver_name):
@@ -41,23 +28,11 @@ class Vehicle:
         self.driver_name = driver_name
     
     def can_accommodate(self, employee_count):
-        """
-        Kapasite kontrolü
-        
-        Args:
-            employee_count: Çalışan sayısı
-        
-        Returns:
-            bool: Alabilir mi?
-        """
+        """Kapasite kontrolü"""
         return employee_count <= self.capacity
     
     def get_occupancy_rate(self):
-        """
-        Doluluk oranı
-        
-        Returns:
-            float: 0-100 arası yüzde
+        """Doluluk oranı (%)
         """
         if self.cluster:
             employee_count = self.cluster.get_employee_count()

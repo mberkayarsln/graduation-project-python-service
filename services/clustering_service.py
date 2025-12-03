@@ -1,6 +1,4 @@
-"""
-ClusteringService - Clustering işlemleri
-"""
+"""Clustering Service"""
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
@@ -11,53 +9,26 @@ from modules.kmeans_clusterer import KMeansClusterer
 
 
 class ClusteringService:
-    """Çalışanları kümelere ayırma"""
+    """Clustering"""
     
     def __init__(self, config):
-        """
-        Args:
-            config: Config objesi
-        """
         self.config = config
-        self.algorithm = 'kmeans'  # Varsayılan algoritma
+        self.algorithm = 'kmeans'
         self.clusterer = None
     
     def cluster_employees(self, employees, num_clusters, random_state=None):
-        """
-        Çalışanları kümele
-        
-        Args:
-            employees: Employee listesi
-            num_clusters: Küme sayısı
-            random_state: Random state
-        
-        Returns:
-            list: Cluster objeleri listesi
-        """
+        """Çalışanları kümele"""
         if self.algorithm == 'kmeans':
             return self._cluster_kmeans(employees, num_clusters, random_state)
         else:
             raise ValueError(f"Desteklenmeyen algoritma: {self.algorithm}")
     
     def _cluster_kmeans(self, employees, num_clusters, random_state):
-        """
-        K-means ile clustering
-        
-        Args:
-            employees: Employee listesi
-            num_clusters: Küme sayısı
-            random_state: Random state
-        
-        Returns:
-            list: Cluster objeleri listesi
-        """
-        # KMeansClusterer kullan (OOP)
+        """K-means clustering"""
         self.clusterer = KMeansClusterer(
             n_clusters=num_clusters,
             random_state=random_state
         )
-        
-        # Koordinatları hazırla
         coordinates = np.array([[emp.lat, emp.lon] for emp in employees])
         
         # Clustering yap

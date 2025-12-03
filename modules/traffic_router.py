@@ -1,52 +1,25 @@
-"""
-TrafficRouter - Trafik verisi yönetimi (OOP)
-"""
+"""Traffic Router"""
 import requests
 from datetime import datetime
 from modules.api_cache import APICache
 
 
 class TrafficRouter:
-    """TomTom API ile trafik verisi çeker"""
+    """TomTom trafik verisi"""
     
     def __init__(self, api_key, cache_enabled=True):
-        """
-        Args:
-            api_key: TomTom API key
-            cache_enabled: Cache kullan
-        """
         self.api_key = api_key
         self.cache = APICache(cache_file='data/tomtom_cache.json') if cache_enabled else None
         self.base_url = "https://api.tomtom.com/routing/1/calculateRoute"
     
     def get_route_with_traffic(self, points, departure_time=None):
-        """
-        TomTom'dan trafikli rota bilgisi al
-        
-        Args:
-            points: [(lat, lon), ...] listesi
-            departure_time: datetime objesi
-        
-        Returns:
-            dict: {
-                'coordinates': [...],
-                'distance_km': float,
-                'duration_no_traffic_min': float,
-                'duration_with_traffic_min': float,
-                'traffic_delay_min': float,
-                'departure_time': datetime
-            }
-        """
+        """Trafikli rota al"""
         if departure_time is None:
             departure_time = datetime.now()
-        
-        # Cache kontrolü
         if self.cache:
             cached_result = self.cache.get(points, departure_time)
             if cached_result is not None:
                 return cached_result
-        
-        # API sorgusu
         locations = ':'.join([f"{lat},{lon}" for lat, lon in points])
         url = f"{self.base_url}/{locations}/json"
         

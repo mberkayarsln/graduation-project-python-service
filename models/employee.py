@@ -1,20 +1,11 @@
-"""
-Employee - Çalışan sınıfı
-"""
+"""Employee model"""
 import math
 
 
 class Employee:
-    """Bir çalışanı temsil eder"""
+    """Çalışan"""
     
     def __init__(self, id, lat, lon, name=None):
-        """
-        Args:
-            id: Çalışan ID
-            lat: Enlem
-            lon: Boylam
-            name: İsim (opsiyonel)
-        """
         self.id = id
         self.lat = lat
         self.lon = lon
@@ -24,16 +15,7 @@ class Employee:
         self.exclusion_reason = None
     
     def distance_to(self, other_lat, other_lon):
-        """
-        Başka bir konuma kuş uçuşu mesafe (Haversine)
-        
-        Args:
-            other_lat: Hedef enlem
-            other_lon: Hedef boylam
-        
-        Returns:
-            float: Mesafe (metre)
-        """
+        """Haversine mesafe (metre)"""
         R = 6371000  # Dünya yarıçapı (metre)
         
         phi1 = math.radians(self.lat)
@@ -48,21 +30,16 @@ class Employee:
         return R * c
     
     def exclude(self, reason):
-        """
-        Çalışanı hariç tut
-        
-        Args:
-            reason: Hariç tutulma nedeni
-        """
+        """Hariç tut"""
         self.excluded = True
         self.exclusion_reason = reason
     
     def get_location(self):
-        """Lokasyon tuple'ı döndürür"""
+        """(lat, lon)"""
         return (self.lat, self.lon)
     
     def to_dict(self):
-        """Dictionary'ye dönüştür"""
+        """Dict dönüştür"""
         return {
             'id': self.id,
             'lat': self.lat,

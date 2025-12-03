@@ -1,33 +1,17 @@
-"""
-OSRMRouter - OSRM API ile rota çizgisi alma
-"""
+"""OSRM Router"""
 import requests
 from modules.api_cache import APICache
 
 
 class OSRMRouter:
-    """
-    OSRM (Open Source Routing Machine) ile yol çizgisi al
-    Ücretsiz, trafik bilgisi yok
-    """
+    """OSRM routing (trafiksiz)"""
     
     def __init__(self, base_url="https://router.project-osrm.org", cache_enabled=True):
-        """
-        Args:
-            base_url: OSRM sunucu URL'i
-            cache_enabled: Cache kullan
-        """
         self.base_url = base_url
         self.cache = APICache(cache_file='data/osrm_cache.json') if cache_enabled else None
     
     def get_route(self, points, profile='driving'):
-        """
-        OSRM'den rota al
-        
-        Args:
-            points: [(lat, lon), ...] listesi
-            profile: 'driving', 'car', 'bike', 'foot'
-        
+        """Rota al
         Returns:
             dict: {
                 'coordinates': [[lat, lon], ...],

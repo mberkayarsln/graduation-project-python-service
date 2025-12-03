@@ -1,20 +1,12 @@
-"""
-KMeansClusterer - K-means clustering (OOP)
-"""
+"""KMeans Clusterer"""
 from sklearn.cluster import KMeans
 import numpy as np
 
 
 class KMeansClusterer:
-    """K-means algoritması ile clustering"""
+    """K-means clustering"""
     
     def __init__(self, n_clusters=5, random_state=42, n_init=10):
-        """
-        Args:
-            n_clusters: Küme sayısı
-            random_state: Random state
-            n_init: Başlangıç denemesi sayısı
-        """
         self.n_clusters = n_clusters
         self.random_state = random_state
         self.n_init = n_init
@@ -24,15 +16,7 @@ class KMeansClusterer:
         self.inertia_ = None
     
     def fit(self, coordinates):
-        """
-        Koordinatları kümele
-        
-        Args:
-            coordinates: numpy array [[lat, lon], ...]
-        
-        Returns:
-            self
-        """
+        """Kümele"""
         self.model = KMeans(
             n_clusters=self.n_clusters,
             random_state=self.random_state,
@@ -46,17 +30,7 @@ class KMeansClusterer:
         return self
     
     def fit_dataframe(self, df, lat_col='lat', lon_col='lon'):
-        """
-        DataFrame'i kümele
-        
-        Args:
-            df: pandas DataFrame
-            lat_col: Enlem kolon adı
-            lon_col: Boylam kolon adı
-        
-        Returns:
-            tuple: (df with cluster column, centers)
-        """
+        """DataFrame kümele"""
         coords = df[[lat_col, lon_col]].values
         self.fit(coords)
         

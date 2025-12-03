@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_a47c408ad6d765d1688d2d89ac015725 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+        <div style="position: fixed; 
+                    top: 10px; right: 10px; 
+                    width: 250px; 
+                    background: white; 
+                    border: 2px solid #10b981;
+                    border-radius: 10px;
+                    padding: 15px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                    z-index: 9999;">
+            <h3 style="margin: 0 0 10px 0; color: #10b981;">
+                Cluster 2
+            </h3>
+            <p style="margin: 5px 0;">
+                <b>Toplam Çalışan:</b> 17<br>
+                <b>Aktif:</b> 15<br>
+                <b>Hariç:</b> 2<br>
+                <b>Durak Sayısı:</b> 7<br>
+        
+                <b>Rota Mesafesi:</b> 44.0 km<br>
+                <b>Süre:</b> 48 dk<br>
+            
+            </p>
+        </div>
+        
+    
+            <div class="folium-map" id="map_a47c408ad6d765d1688d2d89ac015725" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_a47c408ad6d765d1688d2d89ac015725 = L.map(
+                "map_a47c408ad6d765d1688d2d89ac015725",
+                {
+                    center: [41.008953184043804, 29.14505889499434],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 14,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_12ad414517416b300154703c3fcda37f = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_12ad414517416b300154703c3fcda37f.addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+            var marker_6597d2b5fac70731fdcf5a6be9a142d8 = L.marker(
+                [41.1097, 29.0204],
+                {
+}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+            var icon_445da0ca7f346122dc4e92fd3f7946ba = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_7c76a69f3137249117d0eedff13096b5 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_398f8c897ef2b7c0231b62311272cc06 = $(`<div id="html_398f8c897ef2b7c0231b62311272cc06" style="width: 100.0%; height: 100.0%;"><b>Ofis</b></div>`)[0];
+                popup_7c76a69f3137249117d0eedff13096b5.setContent(html_398f8c897ef2b7c0231b62311272cc06);
+            
+        
+
+        marker_6597d2b5fac70731fdcf5a6be9a142d8.bindPopup(popup_7c76a69f3137249117d0eedff13096b5)
+        ;
+
+        
+    
+    
+                marker_6597d2b5fac70731fdcf5a6be9a142d8.setIcon(icon_445da0ca7f346122dc4e92fd3f7946ba);
+            
+    
+            var circle_b172f62114ef414f018aa784beb4e9b3 = L.circle(
+                [41.008953184043804, 29.14505889499434],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#10b981", "fillOpacity": 0.15, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 0.6, "radius": 2500, "stroke": true, "weight": 2}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_a73888703a98aeac0fcd8feeba1cfbca = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_da5e57a9e74ed15ea0004c8df576aaed = $(`<div id="html_da5e57a9e74ed15ea0004c8df576aaed" style="width: 100.0%; height: 100.0%;">Kapsama Alanı<br>2.5 km</div>`)[0];
+                popup_a73888703a98aeac0fcd8feeba1cfbca.setContent(html_da5e57a9e74ed15ea0004c8df576aaed);
+            
+        
+
+        circle_b172f62114ef414f018aa784beb4e9b3.bindPopup(popup_a73888703a98aeac0fcd8feeba1cfbca)
+        ;
+
+        
+    
+    
+            var marker_c8ea62631270870ce4e7752a49c383a8 = L.marker(
+                [41.008953184043804, 29.14505889499434],
+                {
+}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+            var icon_aa79b4e9207c69e2a9a06ed3214a3607 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "black",
+  "iconColor": "white",
+  "icon": "star",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_b9a1588b94dd39f1c1028e4efbbd57fd = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_cb56552c0e0e8c7967cf55e9d9970fea = $(`<div id="html_cb56552c0e0e8c7967cf55e9d9970fea" style="width: 100.0%; height: 100.0%;"><b>Cluster 2 Merkezi</b></div>`)[0];
+                popup_b9a1588b94dd39f1c1028e4efbbd57fd.setContent(html_cb56552c0e0e8c7967cf55e9d9970fea);
+            
+        
+
+        marker_c8ea62631270870ce4e7752a49c383a8.bindPopup(popup_b9a1588b94dd39f1c1028e4efbbd57fd)
+        ;
+
+        
+    
+    
+                marker_c8ea62631270870ce4e7752a49c383a8.setIcon(icon_aa79b4e9207c69e2a9a06ed3214a3607);
+            
+    
+            var marker_c1487f3d68de46b18358c4b0d286342d = L.marker(
+                [41.002703769127685, 29.14042490208174],
+                {
+}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+            var div_icon_f9ca0b483afdb0e51e8bc4b5eeca5546 = L.divIcon({
+  "html": "\n                        \u003cdiv style=\"background: #10b981; color: white; \n                             padding: 5px 10px; border-radius: 8px; \n                             font-weight: bold; font-size: 16px;\n                             border: 3px solid white;\n                             box-shadow: 0 2px 8px rgba(0,0,0,0.4);\"\u003e\n                            1\n                        \u003c/div\u003e\n                    ",
+  "className": "empty",
+});
+        
+    
+        var popup_f1e96e203106da95be847463fe5180c4 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_004a4dd4522b71b68ddac8f77c08c0a2 = $(`<div id="html_004a4dd4522b71b68ddac8f77c08c0a2" style="width: 100.0%; height: 100.0%;"><b>Durak 1</b><br>3 çalışan<br>Cluster 2</div>`)[0];
+                popup_f1e96e203106da95be847463fe5180c4.setContent(html_004a4dd4522b71b68ddac8f77c08c0a2);
+            
+        
+
+        marker_c1487f3d68de46b18358c4b0d286342d.bindPopup(popup_f1e96e203106da95be847463fe5180c4)
+        ;
+
+        
+    
+    
+                marker_c1487f3d68de46b18358c4b0d286342d.setIcon(div_icon_f9ca0b483afdb0e51e8bc4b5eeca5546);
+            
+    
+            var marker_9ba1d25ae0298cb01d14f2d5238a0dc1 = L.marker(
+                [41.0234762392984, 29.162828834065383],
+                {
+}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+            var div_icon_b9c9e0813fe3e40d3067b1a7c08a6a56 = L.divIcon({
+  "html": "\n                        \u003cdiv style=\"background: #10b981; color: white; \n                             padding: 5px 10px; border-radius: 8px; \n                             font-weight: bold; font-size: 16px;\n                             border: 3px solid white;\n                             box-shadow: 0 2px 8px rgba(0,0,0,0.4);\"\u003e\n                            4\n                        \u003c/div\u003e\n                    ",
+  "className": "empty",
+});
+        
+    
+        var popup_99d96b691ac860a78d558a2b30bf97bd = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_ebc6ff7d0f63fdea62d77a9f38522cd8 = $(`<div id="html_ebc6ff7d0f63fdea62d77a9f38522cd8" style="width: 100.0%; height: 100.0%;"><b>Durak 4</b><br>3 çalışan<br>Cluster 2</div>`)[0];
+                popup_99d96b691ac860a78d558a2b30bf97bd.setContent(html_ebc6ff7d0f63fdea62d77a9f38522cd8);
+            
+        
+
+        marker_9ba1d25ae0298cb01d14f2d5238a0dc1.bindPopup(popup_99d96b691ac860a78d558a2b30bf97bd)
+        ;
+
+        
+    
+    
+                marker_9ba1d25ae0298cb01d14f2d5238a0dc1.setIcon(div_icon_b9c9e0813fe3e40d3067b1a7c08a6a56);
+            
+    
+            var marker_8f90ab41958aff3d3660d37cf7d39f55 = L.marker(
+                [41.018628375792645, 29.140422518087455],
+                {
+}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+            var div_icon_2a183a7716a304a4da943cf0b4bcf25f = L.divIcon({
+  "html": "\n                        \u003cdiv style=\"background: #10b981; color: white; \n                             padding: 5px 10px; border-radius: 8px; \n                             font-weight: bold; font-size: 16px;\n                             border: 3px solid white;\n                             box-shadow: 0 2px 8px rgba(0,0,0,0.4);\"\u003e\n                            3\n                        \u003c/div\u003e\n                    ",
+  "className": "empty",
+});
+        
+    
+        var popup_333fff413ea0f7a716be8a9278ae805a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_87fcef940390c5d6b92262c1380b0e62 = $(`<div id="html_87fcef940390c5d6b92262c1380b0e62" style="width: 100.0%; height: 100.0%;"><b>Durak 3</b><br>3 çalışan<br>Cluster 2</div>`)[0];
+                popup_333fff413ea0f7a716be8a9278ae805a.setContent(html_87fcef940390c5d6b92262c1380b0e62);
+            
+        
+
+        marker_8f90ab41958aff3d3660d37cf7d39f55.bindPopup(popup_333fff413ea0f7a716be8a9278ae805a)
+        ;
+
+        
+    
+    
+                marker_8f90ab41958aff3d3660d37cf7d39f55.setIcon(div_icon_2a183a7716a304a4da943cf0b4bcf25f);
+            
+    
+            var marker_af23c398b6c14aa86973d45121748fba = L.marker(
+                [40.99113315639198, 29.159050228809722],
+                {
+}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+            var div_icon_57c53a006ee9a62b8203ccaa76e346e1 = L.divIcon({
+  "html": "\n                        \u003cdiv style=\"background: #10b981; color: white; \n                             padding: 5px 10px; border-radius: 8px; \n                             font-weight: bold; font-size: 16px;\n                             border: 3px solid white;\n                             box-shadow: 0 2px 8px rgba(0,0,0,0.4);\"\u003e\n                            6\n                        \u003c/div\u003e\n                    ",
+  "className": "empty",
+});
+        
+    
+        var popup_f3c5200a8de027dba1250a02306add8d = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_937af9229e23bd804f5e6584fbfa5998 = $(`<div id="html_937af9229e23bd804f5e6584fbfa5998" style="width: 100.0%; height: 100.0%;"><b>Durak 6</b><br>1 çalışan<br>Cluster 2</div>`)[0];
+                popup_f3c5200a8de027dba1250a02306add8d.setContent(html_937af9229e23bd804f5e6584fbfa5998);
+            
+        
+
+        marker_af23c398b6c14aa86973d45121748fba.bindPopup(popup_f3c5200a8de027dba1250a02306add8d)
+        ;
+
+        
+    
+    
+                marker_af23c398b6c14aa86973d45121748fba.setIcon(div_icon_57c53a006ee9a62b8203ccaa76e346e1);
+            
+    
+            var marker_6f8247983c21cb3af67adb780454c26e = L.marker(
+                [40.9904143287807, 29.12860435059306],
+                {
+}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+            var div_icon_f0339450e70a080c62215af5d3c82a64 = L.divIcon({
+  "html": "\n                        \u003cdiv style=\"background: #10b981; color: white; \n                             padding: 5px 10px; border-radius: 8px; \n                             font-weight: bold; font-size: 16px;\n                             border: 3px solid white;\n                             box-shadow: 0 2px 8px rgba(0,0,0,0.4);\"\u003e\n                            7\n                        \u003c/div\u003e\n                    ",
+  "className": "empty",
+});
+        
+    
+        var popup_d42f012d605a329fa444be09d55a74f7 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_401bce4fbe7014253a72d1b48e54c7ff = $(`<div id="html_401bce4fbe7014253a72d1b48e54c7ff" style="width: 100.0%; height: 100.0%;"><b>Durak 7</b><br>1 çalışan<br>Cluster 2</div>`)[0];
+                popup_d42f012d605a329fa444be09d55a74f7.setContent(html_401bce4fbe7014253a72d1b48e54c7ff);
+            
+        
+
+        marker_6f8247983c21cb3af67adb780454c26e.bindPopup(popup_d42f012d605a329fa444be09d55a74f7)
+        ;
+
+        
+    
+    
+                marker_6f8247983c21cb3af67adb780454c26e.setIcon(div_icon_f0339450e70a080c62215af5d3c82a64);
+            
+    
+            var marker_6e074c66f78f33aa02301ff1b120cdff = L.marker(
+                [41.00335134671827, 29.129764429217595],
+                {
+}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+            var div_icon_1aaab5647c7ded2b9012fe0022bfc4df = L.divIcon({
+  "html": "\n                        \u003cdiv style=\"background: #10b981; color: white; \n                             padding: 5px 10px; border-radius: 8px; \n                             font-weight: bold; font-size: 16px;\n                             border: 3px solid white;\n                             box-shadow: 0 2px 8px rgba(0,0,0,0.4);\"\u003e\n                            2\n                        \u003c/div\u003e\n                    ",
+  "className": "empty",
+});
+        
+    
+        var popup_5fa759e3a3b42cce1eab0f911b7cd0ad = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_bf2488035850d316cf0ab2655a30d339 = $(`<div id="html_bf2488035850d316cf0ab2655a30d339" style="width: 100.0%; height: 100.0%;"><b>Durak 2</b><br>3 çalışan<br>Cluster 2</div>`)[0];
+                popup_5fa759e3a3b42cce1eab0f911b7cd0ad.setContent(html_bf2488035850d316cf0ab2655a30d339);
+            
+        
+
+        marker_6e074c66f78f33aa02301ff1b120cdff.bindPopup(popup_5fa759e3a3b42cce1eab0f911b7cd0ad)
+        ;
+
+        
+    
+    
+                marker_6e074c66f78f33aa02301ff1b120cdff.setIcon(div_icon_1aaab5647c7ded2b9012fe0022bfc4df);
+            
+    
+            var marker_1b90fe78be8dfe5996a7b8682984feb7 = L.marker(
+                [41.00984002497869, 29.15534777676266],
+                {
+}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+            var div_icon_6434e911136d2f4f25d66318552af179 = L.divIcon({
+  "html": "\n                        \u003cdiv style=\"background: #10b981; color: white; \n                             padding: 5px 10px; border-radius: 8px; \n                             font-weight: bold; font-size: 16px;\n                             border: 3px solid white;\n                             box-shadow: 0 2px 8px rgba(0,0,0,0.4);\"\u003e\n                            5\n                        \u003c/div\u003e\n                    ",
+  "className": "empty",
+});
+        
+    
+        var popup_5110a25cee2c0f3b94ac2800ebd994ff = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_c22313ab03b0ff4e1bf963bcadfd08d4 = $(`<div id="html_c22313ab03b0ff4e1bf963bcadfd08d4" style="width: 100.0%; height: 100.0%;"><b>Durak 5</b><br>1 çalışan<br>Cluster 2</div>`)[0];
+                popup_5110a25cee2c0f3b94ac2800ebd994ff.setContent(html_c22313ab03b0ff4e1bf963bcadfd08d4);
+            
+        
+
+        marker_1b90fe78be8dfe5996a7b8682984feb7.bindPopup(popup_5110a25cee2c0f3b94ac2800ebd994ff)
+        ;
+
+        
+    
+    
+                marker_1b90fe78be8dfe5996a7b8682984feb7.setIcon(div_icon_6434e911136d2f4f25d66318552af179);
+            
+    
+            var poly_line_224507b96757da413a641b08847d4de8 = L.polyline(
+                [[41.01392514921557, 29.138460419291217], [41.018628375792645, 29.140422518087455]],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": "5, 5", "dashOffset": null, "fill": false, "fillColor": "#10b981", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.4, "smoothFactor": 1.0, "stroke": true, "weight": 1.5}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_b4a27e0b630017d05cf0ab75ad356ef6 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_89348fec68dd22ad6a952f374ea70fd5 = $(`<div id="html_89348fec68dd22ad6a952f374ea70fd5" style="width: 100.0%; height: 100.0%;">Yürüme: 6 → Durak 3</div>`)[0];
+                popup_b4a27e0b630017d05cf0ab75ad356ef6.setContent(html_89348fec68dd22ad6a952f374ea70fd5);
+            
+        
+
+        poly_line_224507b96757da413a641b08847d4de8.bindPopup(popup_b4a27e0b630017d05cf0ab75ad356ef6)
+        ;
+
+        
+    
+    
+            var circle_marker_68f184acf1d37397e730a091d5658283 = L.circleMarker(
+                [41.01392514921557, 29.138460419291217],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#10b981", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 2}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_4820032f4c56090f28c8f7493276db94 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_682abbae21fc6437271bd19b8227eeec = $(`<div id="html_682abbae21fc6437271bd19b8227eeec" style="width: 100.0%; height: 100.0%;"><b>ID:</b> 6<br><b>Durak:</b> 3</div>`)[0];
+                popup_4820032f4c56090f28c8f7493276db94.setContent(html_682abbae21fc6437271bd19b8227eeec);
+            
+        
+
+        circle_marker_68f184acf1d37397e730a091d5658283.bindPopup(popup_4820032f4c56090f28c8f7493276db94)
+        ;
+
+        
+    
+    
+            var poly_line_c33248c3c734d2af02ce64e0401c84f3 = L.polyline(
+                [[41.002773421652414, 29.127111815863312], [41.00335134671827, 29.129764429217595]],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": "5, 5", "dashOffset": null, "fill": false, "fillColor": "#10b981", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.4, "smoothFactor": 1.0, "stroke": true, "weight": 1.5}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_5eef17c35ad06a987e5cca1cecf39538 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_6025638baea6d32ad5f361c03fb12106 = $(`<div id="html_6025638baea6d32ad5f361c03fb12106" style="width: 100.0%; height: 100.0%;">Yürüme: 7 → Durak 6</div>`)[0];
+                popup_5eef17c35ad06a987e5cca1cecf39538.setContent(html_6025638baea6d32ad5f361c03fb12106);
+            
+        
+
+        poly_line_c33248c3c734d2af02ce64e0401c84f3.bindPopup(popup_5eef17c35ad06a987e5cca1cecf39538)
+        ;
+
+        
+    
+    
+            var circle_marker_dd3d0d89dc9663a61a0c4dd88e478125 = L.circleMarker(
+                [41.002773421652414, 29.127111815863312],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#10b981", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 2}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_82ee24df775818c74ecf942f80934e0a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_e97cb05e2f4f320c561c85806381cbde = $(`<div id="html_e97cb05e2f4f320c561c85806381cbde" style="width: 100.0%; height: 100.0%;"><b>ID:</b> 7<br><b>Durak:</b> 6</div>`)[0];
+                popup_82ee24df775818c74ecf942f80934e0a.setContent(html_e97cb05e2f4f320c561c85806381cbde);
+            
+        
+
+        circle_marker_dd3d0d89dc9663a61a0c4dd88e478125.bindPopup(popup_82ee24df775818c74ecf942f80934e0a)
+        ;
+
+        
+    
+    
+            var poly_line_9550f46c1038e4a436bc8a53672aa469 = L.polyline(
+                [[40.99147295029651, 29.159046382086274], [40.99113315639198, 29.159050228809722]],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": "5, 5", "dashOffset": null, "fill": false, "fillColor": "#10b981", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.4, "smoothFactor": 1.0, "stroke": true, "weight": 1.5}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_32f9deb01e26bb8cd2bad2dcccac7089 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_c21fb93e209f8214619f2a6aa268c93a = $(`<div id="html_c21fb93e209f8214619f2a6aa268c93a" style="width: 100.0%; height: 100.0%;">Yürüme: 23 → Durak 4</div>`)[0];
+                popup_32f9deb01e26bb8cd2bad2dcccac7089.setContent(html_c21fb93e209f8214619f2a6aa268c93a);
+            
+        
+
+        poly_line_9550f46c1038e4a436bc8a53672aa469.bindPopup(popup_32f9deb01e26bb8cd2bad2dcccac7089)
+        ;
+
+        
+    
+    
+            var circle_marker_3e0b25a5ba6cf80b560fde369ce12e1f = L.circleMarker(
+                [40.99147295029651, 29.159046382086274],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#10b981", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 2}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_d1513e6d79d439d4aa7bab89341175cf = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_ca677388bcf296eba177ecc28794cabe = $(`<div id="html_ca677388bcf296eba177ecc28794cabe" style="width: 100.0%; height: 100.0%;"><b>ID:</b> 23<br><b>Durak:</b> 4</div>`)[0];
+                popup_d1513e6d79d439d4aa7bab89341175cf.setContent(html_ca677388bcf296eba177ecc28794cabe);
+            
+        
+
+        circle_marker_3e0b25a5ba6cf80b560fde369ce12e1f.bindPopup(popup_d1513e6d79d439d4aa7bab89341175cf)
+        ;
+
+        
+    
+    
+            var poly_line_cf1b518a9539888f7b198f84e738ccac = L.polyline(
+                [[41.01716307422064, 29.165151154805073], [41.0234762392984, 29.162828834065383]],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": "5, 5", "dashOffset": null, "fill": false, "fillColor": "#10b981", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.4, "smoothFactor": 1.0, "stroke": true, "weight": 1.5}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_e3494e476fef815dd9c20039f029925e = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_96fb68afb14cfe818add02aa1212298d = $(`<div id="html_96fb68afb14cfe818add02aa1212298d" style="width: 100.0%; height: 100.0%;">Yürüme: 26 → Durak 2</div>`)[0];
+                popup_e3494e476fef815dd9c20039f029925e.setContent(html_96fb68afb14cfe818add02aa1212298d);
+            
+        
+
+        poly_line_cf1b518a9539888f7b198f84e738ccac.bindPopup(popup_e3494e476fef815dd9c20039f029925e)
+        ;
+
+        
+    
+    
+            var circle_marker_8a627ccfb3facbe515bc31c5d45cd647 = L.circleMarker(
+                [41.01716307422064, 29.165151154805073],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#10b981", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 2}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_49e69e17b9873fb943590bc483a71873 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_d0bd44b6bc69be18f39b82868297664a = $(`<div id="html_d0bd44b6bc69be18f39b82868297664a" style="width: 100.0%; height: 100.0%;"><b>ID:</b> 26<br><b>Durak:</b> 2</div>`)[0];
+                popup_49e69e17b9873fb943590bc483a71873.setContent(html_d0bd44b6bc69be18f39b82868297664a);
+            
+        
+
+        circle_marker_8a627ccfb3facbe515bc31c5d45cd647.bindPopup(popup_49e69e17b9873fb943590bc483a71873)
+        ;
+
+        
+    
+    
+            var poly_line_3e5213ce47a9261f54539b3533c69fda = L.polyline(
+                [[41.00081507862863, 29.13780572233588], [41.002703769127685, 29.14042490208174]],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": "5, 5", "dashOffset": null, "fill": false, "fillColor": "#10b981", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.4, "smoothFactor": 1.0, "stroke": true, "weight": 1.5}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_21091d76dca6bb941ce0ba09e2ad56e4 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_2a756659d15ccadb35b4c7bcb28c105f = $(`<div id="html_2a756659d15ccadb35b4c7bcb28c105f" style="width: 100.0%; height: 100.0%;">Yürüme: 32 → Durak 1</div>`)[0];
+                popup_21091d76dca6bb941ce0ba09e2ad56e4.setContent(html_2a756659d15ccadb35b4c7bcb28c105f);
+            
+        
+
+        poly_line_3e5213ce47a9261f54539b3533c69fda.bindPopup(popup_21091d76dca6bb941ce0ba09e2ad56e4)
+        ;
+
+        
+    
+    
+            var circle_marker_0ff067d4e0a35b504d36b2345375fc4a = L.circleMarker(
+                [41.00081507862863, 29.13780572233588],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#10b981", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 2}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_e95317cedcf2f8fa78d435fce4963a9b = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_d4d219f99d432084b0fc442908996a5c = $(`<div id="html_d4d219f99d432084b0fc442908996a5c" style="width: 100.0%; height: 100.0%;"><b>ID:</b> 32<br><b>Durak:</b> 1</div>`)[0];
+                popup_e95317cedcf2f8fa78d435fce4963a9b.setContent(html_d4d219f99d432084b0fc442908996a5c);
+            
+        
+
+        circle_marker_0ff067d4e0a35b504d36b2345375fc4a.bindPopup(popup_e95317cedcf2f8fa78d435fce4963a9b)
+        ;
+
+        
+    
+    
+            var poly_line_683636cc5b15c39527f832ca09d53e06 = L.polyline(
+                [[41.02514957916183, 29.16515040291511], [41.0234762392984, 29.162828834065383]],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": "5, 5", "dashOffset": null, "fill": false, "fillColor": "#10b981", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.4, "smoothFactor": 1.0, "stroke": true, "weight": 1.5}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_7dfa69b5f0249d50b8a8b9d8cd62b6f2 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_41894f6a541fb6b80a63c45e150fd771 = $(`<div id="html_41894f6a541fb6b80a63c45e150fd771" style="width: 100.0%; height: 100.0%;">Yürüme: 34 → Durak 2</div>`)[0];
+                popup_7dfa69b5f0249d50b8a8b9d8cd62b6f2.setContent(html_41894f6a541fb6b80a63c45e150fd771);
+            
+        
+
+        poly_line_683636cc5b15c39527f832ca09d53e06.bindPopup(popup_7dfa69b5f0249d50b8a8b9d8cd62b6f2)
+        ;
+
+        
+    
+    
+            var circle_marker_211ff4f96897e4193cdbadd9ef7ab93c = L.circleMarker(
+                [41.02514957916183, 29.16515040291511],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#10b981", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 2}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_3fb0bb0dc6084dbee011d33e5077c74b = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_3c8fb374b993e9bf5d5bce9499e3060c = $(`<div id="html_3c8fb374b993e9bf5d5bce9499e3060c" style="width: 100.0%; height: 100.0%;"><b>ID:</b> 34<br><b>Durak:</b> 2</div>`)[0];
+                popup_3fb0bb0dc6084dbee011d33e5077c74b.setContent(html_3c8fb374b993e9bf5d5bce9499e3060c);
+            
+        
+
+        circle_marker_211ff4f96897e4193cdbadd9ef7ab93c.bindPopup(popup_3fb0bb0dc6084dbee011d33e5077c74b)
+        ;
+
+        
+    
+    
+            var poly_line_59c095c87de505997c2d30c0d5788365 = L.polyline(
+                [[41.024750084480075, 29.138443590004815], [41.018628375792645, 29.140422518087455]],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": "5, 5", "dashOffset": null, "fill": false, "fillColor": "#10b981", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.4, "smoothFactor": 1.0, "stroke": true, "weight": 1.5}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_ee841f2a268a0c2d831da9365befc4f9 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_9e4d3f182f6fbc5d3664ecc52e6e838d = $(`<div id="html_9e4d3f182f6fbc5d3664ecc52e6e838d" style="width: 100.0%; height: 100.0%;">Yürüme: 47 → Durak 3</div>`)[0];
+                popup_ee841f2a268a0c2d831da9365befc4f9.setContent(html_9e4d3f182f6fbc5d3664ecc52e6e838d);
+            
+        
+
+        poly_line_59c095c87de505997c2d30c0d5788365.bindPopup(popup_ee841f2a268a0c2d831da9365befc4f9)
+        ;
+
+        
+    
+    
+            var circle_marker_85ab94e228a889f9884d7c9d913f8467 = L.circleMarker(
+                [41.024750084480075, 29.138443590004815],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#10b981", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 2}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_e3a7d9465007b3be88fe3c907715e03a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_279e17e13a06f547d18ecd03d81b2952 = $(`<div id="html_279e17e13a06f547d18ecd03d81b2952" style="width: 100.0%; height: 100.0%;"><b>ID:</b> 47<br><b>Durak:</b> 3</div>`)[0];
+                popup_e3a7d9465007b3be88fe3c907715e03a.setContent(html_279e17e13a06f547d18ecd03d81b2952);
+            
+        
+
+        circle_marker_85ab94e228a889f9884d7c9d913f8467.bindPopup(popup_e3a7d9465007b3be88fe3c907715e03a)
+        ;
+
+        
+    
+    
+            var circle_marker_df3296a0763521e4aa1d9c61b63c41a9 = L.circleMarker(
+                [41.02798994098543, 29.12686369698811],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightgray", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 4, "stroke": true, "weight": 1}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_9de4050ebf87b5dc22f0c883e7a14114 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_762a4668eb4ffdc7839df987619c36ab = $(`<div id="html_762a4668eb4ffdc7839df987619c36ab" style="width: 100.0%; height: 100.0%;"><b>ID:</b> 59<br><b>Durum:</b> Hariç tutuldu<br><b>Sebep:</b> Merkeze uzak (2610m)</div>`)[0];
+                popup_9de4050ebf87b5dc22f0c883e7a14114.setContent(html_762a4668eb4ffdc7839df987619c36ab);
+            
+        
+
+        circle_marker_df3296a0763521e4aa1d9c61b63c41a9.bindPopup(popup_9de4050ebf87b5dc22f0c883e7a14114)
+        ;
+
+        
+    
+    
+            var poly_line_86464aa97bbd8f1128bdbd8c57604002 = L.polyline(
+                [[41.01720989368229, 29.14436354496633], [41.018628375792645, 29.140422518087455]],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": "5, 5", "dashOffset": null, "fill": false, "fillColor": "#10b981", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.4, "smoothFactor": 1.0, "stroke": true, "weight": 1.5}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_cd3d107db3812fa95e05416428b08288 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_d1a380de79e143bc296df0f1ddb033dc = $(`<div id="html_d1a380de79e143bc296df0f1ddb033dc" style="width: 100.0%; height: 100.0%;">Yürüme: 66 → Durak 3</div>`)[0];
+                popup_cd3d107db3812fa95e05416428b08288.setContent(html_d1a380de79e143bc296df0f1ddb033dc);
+            
+        
+
+        poly_line_86464aa97bbd8f1128bdbd8c57604002.bindPopup(popup_cd3d107db3812fa95e05416428b08288)
+        ;
+
+        
+    
+    
+            var circle_marker_d73a10e943553bbca225b53ece6af019 = L.circleMarker(
+                [41.01720989368229, 29.14436354496633],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#10b981", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 2}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_1b687e5ab47685266c9b4c1b1a32f157 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_6a57d8b3be070986ce076c2bcbb69dab = $(`<div id="html_6a57d8b3be070986ce076c2bcbb69dab" style="width: 100.0%; height: 100.0%;"><b>ID:</b> 66<br><b>Durak:</b> 3</div>`)[0];
+                popup_1b687e5ab47685266c9b4c1b1a32f157.setContent(html_6a57d8b3be070986ce076c2bcbb69dab);
+            
+        
+
+        circle_marker_d73a10e943553bbca225b53ece6af019.bindPopup(popup_1b687e5ab47685266c9b4c1b1a32f157)
+        ;
+
+        
+    
+    
+            var poly_line_ad4ce233d9e36e62459f34783574e205 = L.polyline(
+                [[41.028116064512716, 29.15818494447597], [41.0234762392984, 29.162828834065383]],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": "5, 5", "dashOffset": null, "fill": false, "fillColor": "#10b981", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.4, "smoothFactor": 1.0, "stroke": true, "weight": 1.5}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_6845ac139754f45adc298079abf1aba2 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_81d687a4e6434f862347a8169d2adac3 = $(`<div id="html_81d687a4e6434f862347a8169d2adac3" style="width: 100.0%; height: 100.0%;">Yürüme: 77 → Durak 2</div>`)[0];
+                popup_6845ac139754f45adc298079abf1aba2.setContent(html_81d687a4e6434f862347a8169d2adac3);
+            
+        
+
+        poly_line_ad4ce233d9e36e62459f34783574e205.bindPopup(popup_6845ac139754f45adc298079abf1aba2)
+        ;
+
+        
+    
+    
+            var circle_marker_9b842541139d9e8aee13dff0eb4ecb4a = L.circleMarker(
+                [41.028116064512716, 29.15818494447597],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#10b981", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 2}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_3b051a8a5c475c20b0db23cdc46f98c5 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_1c6e9b9e2484d9b694f0408c5f554978 = $(`<div id="html_1c6e9b9e2484d9b694f0408c5f554978" style="width: 100.0%; height: 100.0%;"><b>ID:</b> 77<br><b>Durak:</b> 2</div>`)[0];
+                popup_3b051a8a5c475c20b0db23cdc46f98c5.setContent(html_1c6e9b9e2484d9b694f0408c5f554978);
+            
+        
+
+        circle_marker_9b842541139d9e8aee13dff0eb4ecb4a.bindPopup(popup_3b051a8a5c475c20b0db23cdc46f98c5)
+        ;
+
+        
+    
+    
+            var poly_line_be240781bbbe75855e7076aa695d61fd = L.polyline(
+                [[41.008693363935556, 29.154863719159675], [41.00984002497869, 29.15534777676266]],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": "5, 5", "dashOffset": null, "fill": false, "fillColor": "#10b981", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.4, "smoothFactor": 1.0, "stroke": true, "weight": 1.5}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_baf54e25e3da86279333bc5d71e933b3 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_130fcdb02cfe4b957a41f332bcda9532 = $(`<div id="html_130fcdb02cfe4b957a41f332bcda9532" style="width: 100.0%; height: 100.0%;">Yürüme: 80 → Durak 7</div>`)[0];
+                popup_baf54e25e3da86279333bc5d71e933b3.setContent(html_130fcdb02cfe4b957a41f332bcda9532);
+            
+        
+
+        poly_line_be240781bbbe75855e7076aa695d61fd.bindPopup(popup_baf54e25e3da86279333bc5d71e933b3)
+        ;
+
+        
+    
+    
+            var circle_marker_e990b3a9f2dd49b8823080e8c7ace24e = L.circleMarker(
+                [41.008693363935556, 29.154863719159675],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#10b981", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 2}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_c8fc8bc69dd3f376bc6b5304432784a4 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_65212308426e7607861cd4aff08c9942 = $(`<div id="html_65212308426e7607861cd4aff08c9942" style="width: 100.0%; height: 100.0%;"><b>ID:</b> 80<br><b>Durak:</b> 7</div>`)[0];
+                popup_c8fc8bc69dd3f376bc6b5304432784a4.setContent(html_65212308426e7607861cd4aff08c9942);
+            
+        
+
+        circle_marker_e990b3a9f2dd49b8823080e8c7ace24e.bindPopup(popup_c8fc8bc69dd3f376bc6b5304432784a4)
+        ;
+
+        
+    
+    
+            var poly_line_c0ca278cef7273fb91b95cef3b399dd1 = L.polyline(
+                [[41.002894419982965, 29.140525633634557], [41.002703769127685, 29.14042490208174]],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": "5, 5", "dashOffset": null, "fill": false, "fillColor": "#10b981", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.4, "smoothFactor": 1.0, "stroke": true, "weight": 1.5}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_7ce76254438139a33721136022313c9e = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_99971f07dd85db9c30259adda1fd2e65 = $(`<div id="html_99971f07dd85db9c30259adda1fd2e65" style="width: 100.0%; height: 100.0%;">Yürüme: 83 → Durak 1</div>`)[0];
+                popup_7ce76254438139a33721136022313c9e.setContent(html_99971f07dd85db9c30259adda1fd2e65);
+            
+        
+
+        poly_line_c0ca278cef7273fb91b95cef3b399dd1.bindPopup(popup_7ce76254438139a33721136022313c9e)
+        ;
+
+        
+    
+    
+            var circle_marker_0affac0185f0a071705a8852fa409dc5 = L.circleMarker(
+                [41.002894419982965, 29.140525633634557],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#10b981", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 2}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_059892af04423f74f902e7583bdebdb0 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_bbf529b0ce490f2879b16825374ba1a2 = $(`<div id="html_bbf529b0ce490f2879b16825374ba1a2" style="width: 100.0%; height: 100.0%;"><b>ID:</b> 83<br><b>Durak:</b> 1</div>`)[0];
+                popup_059892af04423f74f902e7583bdebdb0.setContent(html_bbf529b0ce490f2879b16825374ba1a2);
+            
+        
+
+        circle_marker_0affac0185f0a071705a8852fa409dc5.bindPopup(popup_059892af04423f74f902e7583bdebdb0)
+        ;
+
+        
+    
+    
+            var circle_marker_43b25f4a634fba08d2719449456bac0a = L.circleMarker(
+                [40.98656498851685, 29.175177495321524],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightgray", "fillOpacity": 0.5, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 4, "stroke": true, "weight": 1}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_5fea72bcdcf29e6a714ce6b6799b12e2 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_33370595c8df0c1accfc8c48a87ed799 = $(`<div id="html_33370595c8df0c1accfc8c48a87ed799" style="width: 100.0%; height: 100.0%;"><b>ID:</b> 84<br><b>Durum:</b> Hariç tutuldu<br><b>Sebep:</b> Merkeze uzak (3548m)</div>`)[0];
+                popup_5fea72bcdcf29e6a714ce6b6799b12e2.setContent(html_33370595c8df0c1accfc8c48a87ed799);
+            
+        
+
+        circle_marker_43b25f4a634fba08d2719449456bac0a.bindPopup(popup_5fea72bcdcf29e6a714ce6b6799b12e2)
+        ;
+
+        
+    
+    
+            var poly_line_c238d33fbe6482510a5315104508afea = L.polyline(
+                [[41.004336019183626, 29.13244538186325], [41.00335134671827, 29.129764429217595]],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": "5, 5", "dashOffset": null, "fill": false, "fillColor": "#10b981", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.4, "smoothFactor": 1.0, "stroke": true, "weight": 1.5}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_183cc3f5d843ed6ddacbc39a1d91d980 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_76f7e546298d115e179ffcead56a82d3 = $(`<div id="html_76f7e546298d115e179ffcead56a82d3" style="width: 100.0%; height: 100.0%;">Yürüme: 86 → Durak 6</div>`)[0];
+                popup_183cc3f5d843ed6ddacbc39a1d91d980.setContent(html_76f7e546298d115e179ffcead56a82d3);
+            
+        
+
+        poly_line_c238d33fbe6482510a5315104508afea.bindPopup(popup_183cc3f5d843ed6ddacbc39a1d91d980)
+        ;
+
+        
+    
+    
+            var circle_marker_bb242a094b2b5551046a5db59a189621 = L.circleMarker(
+                [41.004336019183626, 29.13244538186325],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#10b981", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 2}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_ad6d03483291d69b4b94f254eae784b0 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_c814998d3f07f4165e24c8cab4e5b8cf = $(`<div id="html_c814998d3f07f4165e24c8cab4e5b8cf" style="width: 100.0%; height: 100.0%;"><b>ID:</b> 86<br><b>Durak:</b> 6</div>`)[0];
+                popup_ad6d03483291d69b4b94f254eae784b0.setContent(html_c814998d3f07f4165e24c8cab4e5b8cf);
+            
+        
+
+        circle_marker_bb242a094b2b5551046a5db59a189621.bindPopup(popup_ad6d03483291d69b4b94f254eae784b0)
+        ;
+
+        
+    
+    
+            var poly_line_0613e10f3cc8e10192592d07ae1825d7 = L.polyline(
+                [[41.00294459931877, 29.12973608992622], [41.00335134671827, 29.129764429217595]],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": "5, 5", "dashOffset": null, "fill": false, "fillColor": "#10b981", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.4, "smoothFactor": 1.0, "stroke": true, "weight": 1.5}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_01cb6dbd528e220bb6c010fe0058c55a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_4bec502abad77b246fd93c05ddce5ae9 = $(`<div id="html_4bec502abad77b246fd93c05ddce5ae9" style="width: 100.0%; height: 100.0%;">Yürüme: 90 → Durak 6</div>`)[0];
+                popup_01cb6dbd528e220bb6c010fe0058c55a.setContent(html_4bec502abad77b246fd93c05ddce5ae9);
+            
+        
+
+        poly_line_0613e10f3cc8e10192592d07ae1825d7.bindPopup(popup_01cb6dbd528e220bb6c010fe0058c55a)
+        ;
+
+        
+    
+    
+            var circle_marker_f8c3aaa7ba859f87a0fe9445b59bee3e = L.circleMarker(
+                [41.00294459931877, 29.12973608992622],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#10b981", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 2}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_adc85879b76239a18580221daab2e838 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_ca94a9783fa7485e871004b01cb5268b = $(`<div id="html_ca94a9783fa7485e871004b01cb5268b" style="width: 100.0%; height: 100.0%;"><b>ID:</b> 90<br><b>Durak:</b> 6</div>`)[0];
+                popup_adc85879b76239a18580221daab2e838.setContent(html_ca94a9783fa7485e871004b01cb5268b);
+            
+        
+
+        circle_marker_f8c3aaa7ba859f87a0fe9445b59bee3e.bindPopup(popup_adc85879b76239a18580221daab2e838)
+        ;
+
+        
+    
+    
+            var poly_line_1abad8416b7b6dd54eebe5ff592a76ef = L.polyline(
+                [[40.9904143287807, 29.12860435059306], [40.9904143287807, 29.12860435059306]],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": "5, 5", "dashOffset": null, "fill": false, "fillColor": "#10b981", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.4, "smoothFactor": 1.0, "stroke": true, "weight": 1.5}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_b80422ebca6a532eb0468d781fe28106 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_657d59c30827c24d5189920ff85faacb = $(`<div id="html_657d59c30827c24d5189920ff85faacb" style="width: 100.0%; height: 100.0%;">Yürüme: 91 → Durak 5</div>`)[0];
+                popup_b80422ebca6a532eb0468d781fe28106.setContent(html_657d59c30827c24d5189920ff85faacb);
+            
+        
+
+        poly_line_1abad8416b7b6dd54eebe5ff592a76ef.bindPopup(popup_b80422ebca6a532eb0468d781fe28106)
+        ;
+
+        
+    
+    
+            var circle_marker_9bd4a81abe915f3d43aae22658f9f611 = L.circleMarker(
+                [40.9904143287807, 29.12860435059306],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#10b981", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 2}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_a579c1b0cf3394d5c8e511d8fa7da499 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_789d66095c6e939495872062a422af6e = $(`<div id="html_789d66095c6e939495872062a422af6e" style="width: 100.0%; height: 100.0%;"><b>ID:</b> 91<br><b>Durak:</b> 5</div>`)[0];
+                popup_a579c1b0cf3394d5c8e511d8fa7da499.setContent(html_789d66095c6e939495872062a422af6e);
+            
+        
+
+        circle_marker_9bd4a81abe915f3d43aae22658f9f611.bindPopup(popup_a579c1b0cf3394d5c8e511d8fa7da499)
+        ;
+
+        
+    
+    
+            var poly_line_931c246a2f9dc68acd34b0dd6878c076 = L.polyline(
+                [[41.00699117219009, 29.144066870673377], [41.002703769127685, 29.14042490208174]],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": "5, 5", "dashOffset": null, "fill": false, "fillColor": "#10b981", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.4, "smoothFactor": 1.0, "stroke": true, "weight": 1.5}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_776431172d9beae03e836c20acc609b7 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_00c73970f124c8fd034303722b7c8a33 = $(`<div id="html_00c73970f124c8fd034303722b7c8a33" style="width: 100.0%; height: 100.0%;">Yürüme: 93 → Durak 1</div>`)[0];
+                popup_776431172d9beae03e836c20acc609b7.setContent(html_00c73970f124c8fd034303722b7c8a33);
+            
+        
+
+        poly_line_931c246a2f9dc68acd34b0dd6878c076.bindPopup(popup_776431172d9beae03e836c20acc609b7)
+        ;
+
+        
+    
+    
+            var circle_marker_aac023c1ccfac2038ecbcff60a09c2d1 = L.circleMarker(
+                [41.00699117219009, 29.144066870673377],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#10b981", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 2}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_39e21e93d56302ceeed24ba942900c3b = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_5381ede3bc95d08be5aa0689f2f1e320 = $(`<div id="html_5381ede3bc95d08be5aa0689f2f1e320" style="width: 100.0%; height: 100.0%;"><b>ID:</b> 93<br><b>Durak:</b> 1</div>`)[0];
+                popup_39e21e93d56302ceeed24ba942900c3b.setContent(html_5381ede3bc95d08be5aa0689f2f1e320);
+            
+        
+
+        circle_marker_aac023c1ccfac2038ecbcff60a09c2d1.bindPopup(popup_39e21e93d56302ceeed24ba942900c3b)
+        ;
+
+        
+    
+    
+            var poly_line_409b38a275842bad0132a775c36bea0d = L.polyline(
+                [[41.002704, 29.140425], [41.00281, 29.140178], [41.002856, 29.140069], [41.002913, 29.13995], [41.003233, 29.13925], [41.003547, 29.13866], [41.003716, 29.13817], [41.003741, 29.138098], [41.004175, 29.136886], [41.004509, 29.135935], [41.004559, 29.135812], [41.004871, 29.135028], [41.004968, 29.134757], [41.005083, 29.134519], [41.005839, 29.13272], [41.005784, 29.132662], [41.005176, 29.132107], [41.004661, 29.131643], [41.004162, 29.131163], [41.003619, 29.130646], [41.003574, 29.130608], [41.002215, 29.129405], [41.00253, 29.128813], [41.003418, 29.129636], [41.003927, 29.130108], [41.003691, 29.130542], [41.003619, 29.130646], [41.004162, 29.131163], [41.004661, 29.131643], [41.005176, 29.132107], [41.005784, 29.132662], [41.005839, 29.13272], [41.006443, 29.133357], [41.007033, 29.133793], [41.007605, 29.13422], [41.008132, 29.134599], [41.008715, 29.135009], [41.009264, 29.135436], [41.009834, 29.135778], [41.010374, 29.136156], [41.010911, 29.1366], [41.010938, 29.136623], [41.010781, 29.136972], [41.010159, 29.138344], [41.010057, 29.13857], [41.009908, 29.138914], [41.009825, 29.139073], [41.009752, 29.139185], [41.009725, 29.139226], [41.009657, 29.139303], [41.009603, 29.139302], [41.009564, 29.139323], [41.009536, 29.139352], [41.009511, 29.139394], [41.009497, 29.139428], [41.00949, 29.139494], [41.009497, 29.139553], [41.009525, 29.139618], [41.009552, 29.139648], [41.009594, 29.139675], [41.009628, 29.139683], [41.009667, 29.13968], [41.009702, 29.139663], [41.009736, 29.139629], [41.009813, 29.139618], [41.009859, 29.139617], [41.010132, 29.139848], [41.010604, 29.140204], [41.011098, 29.140487], [41.011481, 29.140743], [41.011655, 29.140842], [41.011986, 29.141038], [41.012978, 29.141775], [41.013316, 29.142027], [41.013641, 29.142261], [41.013978, 29.1425], [41.014297, 29.142748], [41.014601, 29.142989], [41.014943, 29.14323], [41.015118, 29.142801], [41.015136, 29.142759], [41.015167, 29.142682], [41.015306, 29.142345], [41.015487, 29.141914], [41.015525, 29.141818], [41.015673, 29.141445], [41.015912, 29.140959], [41.016085, 29.14058], [41.016379, 29.140761], [41.016451, 29.14079], [41.016544, 29.140774], [41.016572, 29.140034], [41.016582, 29.139817], [41.016596, 29.139494], [41.016641, 29.139301], [41.016697, 29.139132], [41.016862, 29.138754], [41.017153, 29.138137], [41.017443, 29.137624], [41.017581, 29.137409], [41.017909, 29.136918], [41.018004, 29.136782], [41.018229, 29.136432], [41.018317, 29.137127], [41.018366, 29.137564], [41.018381, 29.137713], [41.018388, 29.137753], [41.018399, 29.137842], [41.01843, 29.13811], [41.018439, 29.138311], [41.018362, 29.138827], [41.018289, 29.139136], [41.018273, 29.139304], [41.018381, 29.139305], [41.018593, 29.139207], [41.018661, 29.139165], [41.018816, 29.139602], [41.018906, 29.139798], [41.019101, 29.140198], [41.019015, 29.140279], [41.018842, 29.140436], [41.018667, 29.140539], [41.018537, 29.140615], [41.018536, 29.140884], [41.018572, 29.140924], [41.018816, 29.141238], [41.019053, 29.142092], [41.019111, 29.142301], [41.019197, 29.142548], [41.019259, 29.142726], [41.019384, 29.143084], [41.019464, 29.143312], [41.019498, 29.14341], [41.019575, 29.143642], [41.019621, 29.143828], [41.019693, 29.144092], [41.019751, 29.144371], [41.019769, 29.144423], [41.019859, 29.14487], [41.019865, 29.1449], [41.019906, 29.145071], [41.019984, 29.145407], [41.020039, 29.145627], [41.020141, 29.146032], [41.020221, 29.146357], [41.020244, 29.146462], [41.020261, 29.146522], [41.020278, 29.146564], [41.020392, 29.146977], [41.020514, 29.147179], [41.020521, 29.147191], [41.020633, 29.147403], [41.020784, 29.147693], [41.020723, 29.147869], [41.020675, 29.148017], [41.020664, 29.148181], [41.020642, 29.148506], [41.020668, 29.14879], [41.020695, 29.148866], [41.020837, 29.14927], [41.020864, 29.149355], [41.02107, 29.149871], [41.021115, 29.150163], [41.02111, 29.150325], [41.021122, 29.150637], [41.02114, 29.150831], [41.021167, 29.150935], [41.021267, 29.15128], [41.021487, 29.151963], [41.02152, 29.152152], [41.021641, 29.152569], [41.021772, 29.15296], [41.021835, 29.153288], [41.021882, 29.153493], [41.022036, 29.154022], [41.022104, 29.154549], [41.022305, 29.154983], [41.022375, 29.155117], [41.022457, 29.155268], [41.022708, 29.155613], [41.022762, 29.155685], [41.022844, 29.155793], [41.022881, 29.155966], [41.022928, 29.156188], [41.022924, 29.156338], [41.022923, 29.156387], [41.022922, 29.156736], [41.02291, 29.156908], [41.022903, 29.157136], [41.0229, 29.157262], [41.022893, 29.157518], [41.022886, 29.15781], [41.022877, 29.158154], [41.022876, 29.158192], [41.02287, 29.15842], [41.022846, 29.158615], [41.022837, 29.158693], [41.022832, 29.158741], [41.022758, 29.15964], [41.022748, 29.15976], [41.022727, 29.160059], [41.022729, 29.160313], [41.022727, 29.160454], [41.022709, 29.160721], [41.022723, 29.160838], [41.022961, 29.161098], [41.023357, 29.161505], [41.023537, 29.16169], [41.023693, 29.161783], [41.023653, 29.162068], [41.023714, 29.162308], [41.023796, 29.162634], [41.024062, 29.163162], [41.024016, 29.163562], [41.023724, 29.163503], [41.023589, 29.163443], [41.023336, 29.163224], [41.02329, 29.163182], [41.023231, 29.163127], [41.023085, 29.162991], [41.022623, 29.162505], [41.022372, 29.162323], [41.022311, 29.162149], [41.02228, 29.161773], [41.022442, 29.16164], [41.022641, 29.161343], [41.022723, 29.160838], [41.022709, 29.160721], [41.022727, 29.160454], [41.022729, 29.160313], [41.022727, 29.160059], [41.022748, 29.15976], [41.022758, 29.15964], [41.022832, 29.158741], [41.022837, 29.158693], [41.022846, 29.158615], [41.02287, 29.15842], [41.022876, 29.158192], [41.022877, 29.158154], [41.022886, 29.15781], [41.022893, 29.157518], [41.0229, 29.157262], [41.022903, 29.157136], [41.02291, 29.156908], [41.022922, 29.156736], [41.022923, 29.156387], [41.022924, 29.156338], [41.022928, 29.156188], [41.022881, 29.155966], [41.022844, 29.155793], [41.022762, 29.155685], [41.022708, 29.155613], [41.022457, 29.155268], [41.022375, 29.155117], [41.022305, 29.154983], [41.022175, 29.154539], [41.022036, 29.154022], [41.021882, 29.153493], [41.021835, 29.153288], [41.021772, 29.15296], [41.021641, 29.152569], [41.02152, 29.152152], [41.021487, 29.151963], [41.021267, 29.15128], [41.021167, 29.150935], [41.02114, 29.150831], [41.021122, 29.150637], [41.02111, 29.150325], [41.021115, 29.150163], [41.02107, 29.149871], [41.020825, 29.14973], [41.020658, 29.149631], [41.020481, 29.149524], [41.020331, 29.14942], [41.02012, 29.14928], [41.019904, 29.149159], [41.019785, 29.149084], [41.019702, 29.149033], [41.019641, 29.148989], [41.019462, 29.148881], [41.019103, 29.148671], [41.018759, 29.148477], [41.018387, 29.148241], [41.018296, 29.148183], [41.01805, 29.148065], [41.01774, 29.147917], [41.017436, 29.147868], [41.01712, 29.147799], [41.016833, 29.147724], [41.016662, 29.147654], [41.016439, 29.147612], [41.016117, 29.147555], [41.016047, 29.147534], [41.015987, 29.148206], [41.015964, 29.148491], [41.015948, 29.148707], [41.015933, 29.148899], [41.015892, 29.149429], [41.015228, 29.149412], [41.014949, 29.149372], [41.014714, 29.149344], [41.014257, 29.149295], [41.013863, 29.149272], [41.013423, 29.14923], [41.013057, 29.149197], [41.012996, 29.149191], [41.012666, 29.149137], [41.012483, 29.149135], [41.012171, 29.149919], [41.012046, 29.150266], [41.011796, 29.150916], [41.011457, 29.151673], [41.011071, 29.152515], [41.010803, 29.153127], [41.010571, 29.153647], [41.010301, 29.154259], [41.010037, 29.154882], [41.009842, 29.155349], [41.009806, 29.155434], [41.009662, 29.155794], [41.009359, 29.156548], [41.009164, 29.156974], [41.008956, 29.157457], [41.008734, 29.157991], [41.00873, 29.157999], [41.008526, 29.15848], [41.008311, 29.158984], [41.008122, 29.159414], [41.007944, 29.159813], [41.007722, 29.160338], [41.007418, 29.161104], [41.007371, 29.16121], [41.007185, 29.161691], [41.007163, 29.161747], [41.007119, 29.16171], [41.007061, 29.161662], [41.007029, 29.161636], [41.005581, 29.160353], [41.004572, 29.159426], [41.004472, 29.159324], [41.004426, 29.159282], [41.003175, 29.158177], [41.002977, 29.158002], [41.00163, 29.156746], [41.001582, 29.156706], [41.001186, 29.156383], [41.001122, 29.156336], [41.000947, 29.156206], [41.000718, 29.156052], [41.000523, 29.155921], [41.000321, 29.155798], [41.000279, 29.155772], [41.000235, 29.155748], [41.000174, 29.155721], [41.000046, 29.155672], [40.999728, 29.155537], [40.999221, 29.155295], [40.998901, 29.155122], [40.998688, 29.154988], [40.998578, 29.154918], [40.998478, 29.154848], [40.998408, 29.154809], [40.99837, 29.154788], [40.99829, 29.154755], [40.998205, 29.154724], [40.99809, 29.154701], [40.997961, 29.154678], [40.997826, 29.154679], [40.997785, 29.154688], [40.997333, 29.154762], [40.997039, 29.154923], [40.996699, 29.155004], [40.996557, 29.155039], [40.996109, 29.155117], [40.995566, 29.155174], [40.995086, 29.155208], [40.994175, 29.155283], [40.993698, 29.155326], [40.99354, 29.155319], [40.9934, 29.155246], [40.993334, 29.155189], [40.993281, 29.155092], [40.993021, 29.154372], [40.992943, 29.154115], [40.992754, 29.153634], [40.992573, 29.153261], [40.992421, 29.15298], [40.992344, 29.152819], [40.992261, 29.152601], [40.992193, 29.152261], [40.992152, 29.152202], [40.992101, 29.152139], [40.992049, 29.152137], [40.992009, 29.15215], [40.991979, 29.152185], [40.991974, 29.152248], [40.991977, 29.152312], [40.992016, 29.152442], [40.992097, 29.152597], [40.992378, 29.153112], [40.992552, 29.153491], [40.992524, 29.153633], [40.992478, 29.15371], [40.99244, 29.153769], [40.992364, 29.153834], [40.992323, 29.153866], [40.99199, 29.154125], [40.991527, 29.154512], [40.991465, 29.154559], [40.991312, 29.154678], [40.991148, 29.154772], [40.991131, 29.154777], [40.991116, 29.154788], [40.991103, 29.154805], [40.991096, 29.154826], [40.991093, 29.154849], [40.991096, 29.154872], [40.991104, 29.154892], [40.991098, 29.155619], [40.991135, 29.155703], [40.991136, 29.156463], [40.991135, 29.156558], [40.991132, 29.15687], [40.99112, 29.157833], [40.991078, 29.158097], [40.991055, 29.158405], [40.991025, 29.158556], [40.990956, 29.158745], [40.990769, 29.159029], [40.990359, 29.159458], [40.990271, 29.159649], [40.990255, 29.159711], [40.990252, 29.159785], [40.990265, 29.159856], [40.990384, 29.160026], [40.990821, 29.160445], [40.990987, 29.160595], [40.991053, 29.160604], [40.991126, 29.160566], [40.991147, 29.160514], [40.991153, 29.160449], [40.991155, 29.160336], [40.991174, 29.160199], [40.991136, 29.159218], [40.991135, 29.159182], [40.991134, 29.15905], [40.991124, 29.158172], [40.99112, 29.157833], [40.991132, 29.15687], [40.991135, 29.156558], [40.991136, 29.156463], [40.991135, 29.155703], [40.991169, 29.155622], [40.991184, 29.155248], [40.991199, 29.154887], [40.991206, 29.154866], [40.991207, 29.154843], [40.991203, 29.15482], [40.991195, 29.1548], [40.991182, 29.154785], [40.991166, 29.154775], [40.991148, 29.154772], [40.991016, 29.15477], [40.989728, 29.154734], [40.989654, 29.154705], [40.98963, 29.154514], [40.989633, 29.15415], [40.989638, 29.153324], [40.98964, 29.153261], [40.989661, 29.151615], [40.99091, 29.15051], [40.990918, 29.150504], [40.990965, 29.150489], [40.990998, 29.150494], [40.991033, 29.150508], [40.991694, 29.151775], [40.991765, 29.15192], [40.991879, 29.152027], [40.991925, 29.152036], [40.991979, 29.152018], [40.992009, 29.151961], [40.992015, 29.151893], [40.991994, 29.151744], [40.991866, 29.15156], [40.991581, 29.151223], [40.991346, 29.15089], [40.991228, 29.150683], [40.991045, 29.150286], [40.990935, 29.15005], [40.990875, 29.149887], [40.990861, 29.14985], [40.990857, 29.149836], [40.990774, 29.149521], [40.990718, 29.149234], [40.99067, 29.14894], [40.990617, 29.148735], [40.990567, 29.148595], [40.990503, 29.148475], [40.990404, 29.148341], [40.99018, 29.148102], [40.990124, 29.148042], [40.989809, 29.147676], [40.989661, 29.147433], [40.989589, 29.147316], [40.98917, 29.146475], [40.989102, 29.146307], [40.989051, 29.146184], [40.988182, 29.144195], [40.988129, 29.144066], [40.9881, 29.144005], [40.988063, 29.14393], [40.987908, 29.143607], [40.987892, 29.143573], [40.987335, 29.14245], [40.987191, 29.14209], [40.987134, 29.14186], [40.9871, 29.14165], [40.987088, 29.141234], [40.987086, 29.141174], [40.987082, 29.141119], [40.987081, 29.140983], [40.987073, 29.140381], [40.98704, 29.139625], [40.987013, 29.139503], [40.986968, 29.139348], [40.986915, 29.139242], [40.986516, 29.138631], [40.986229, 29.138283], [40.985915, 29.137928], [40.985414, 29.137376], [40.985347, 29.137303], [40.985045, 29.13697], [40.984686, 29.136604], [40.984307, 29.136285], [40.984118, 29.136169], [40.983924, 29.136043], [40.983567, 29.135782], [40.983388, 29.135642], [40.983255, 29.135514], [40.98317, 29.135411], [40.983039, 29.135258], [40.982959, 29.135074], [40.982899, 29.134817], [40.982877, 29.134586], [40.982918, 29.134422], [40.98298, 29.134251], [40.983031, 29.134144], [40.98311, 29.133958], [40.983172, 29.13383], [40.983253, 29.133723], [40.983446, 29.133524], [40.983893, 29.133138], [40.984051, 29.133005], [40.984376, 29.132697], [40.984587, 29.132413], [40.984786, 29.13218], [40.984931, 29.131955], [40.985105, 29.131673], [40.985633, 29.130766], [40.986107, 29.129922], [40.986351, 29.129464], [40.98663, 29.128948], [40.987182, 29.127933], [40.987337, 29.127644], [40.987971, 29.126444], [40.988287, 29.125707], [40.988392, 29.125601], [40.988471, 29.12552], [40.988505, 29.125486], [40.988579, 29.125451], [40.988779, 29.125452], [40.988973, 29.125426], [40.989114, 29.125417], [40.989188, 29.125427], [40.989231, 29.12546], [40.989266, 29.125512], [40.989293, 29.125594], [40.989322, 29.125659], [40.989355, 29.125717], [40.989391, 29.125758], [40.989492, 29.125846], [40.9896, 29.125945], [40.989681, 29.126022], [40.989734, 29.126087], [40.989747, 29.12613], [40.989769, 29.126166], [40.989798, 29.126191], [40.989833, 29.126203], [40.989857, 29.126203], [40.98988, 29.126196], [40.990002, 29.126242], [40.990047, 29.126259], [40.990395, 29.126421], [40.990562, 29.126494], [40.990835, 29.126614], [40.99084, 29.126938], [40.990847, 29.127133], [40.990855, 29.12736], [40.990858, 29.127612], [40.990842, 29.127732], [40.990828, 29.127836], [40.990772, 29.128248], [40.990764, 29.128313], [40.99072, 29.128636], [40.990689, 29.128744], [40.990642, 29.128905], [40.990598, 29.129058], [40.990485, 29.129521], [40.990396, 29.129466], [40.989875, 29.129142], [40.989865, 29.129137], [40.989463, 29.128919], [40.989348, 29.128941], [40.989329, 29.128947], [40.989263, 29.12879], [40.989225, 29.128711], [40.989172, 29.128602], [40.989132, 29.128586], [40.989032, 29.128369], [40.988969, 29.128327], [40.988646, 29.128222], [40.988272, 29.128101], [40.987833, 29.127962], [40.987607, 29.12789], [40.987426, 29.127795], [40.98736, 29.127729], [40.987337, 29.127644], [40.987971, 29.126444], [40.988287, 29.125707], [40.988365, 29.125393], [40.988404, 29.125365], [40.988436, 29.125321], [40.98846, 29.125271], [40.988474, 29.125213], [40.988478, 29.125154], [40.98847, 29.125094], [40.988452, 29.125039], [40.988512, 29.124534], [40.98853, 29.124349], [40.988565, 29.124138], [40.988561, 29.123687], [40.988523, 29.123305], [40.988482, 29.123043], [40.98842, 29.122741], [40.988351, 29.122453], [40.988239, 29.122094], [40.988208, 29.121983], [40.987807, 29.120562], [40.987751, 29.117681], [40.987736, 29.117176], [40.987721, 29.116697], [40.987753, 29.116129], [40.987767, 29.115839], [40.987763, 29.115549], [40.987715, 29.114198], [40.98769, 29.113995], [40.987611, 29.113269], [40.987566, 29.112915], [40.98718, 29.109863], [40.987131, 29.109519], [40.987097, 29.109188], [40.987076, 29.109058], [40.987057, 29.108951], [40.986958, 29.108889], [40.98686, 29.10883], [40.9867, 29.108662], [40.986633, 29.10852], [40.98662, 29.108416], [40.986653, 29.108257], [40.986701, 29.108156], [40.98678, 29.108074], [40.986863, 29.108061], [40.98693, 29.108063], [40.987053, 29.108121], [40.987233, 29.108245], [40.987452, 29.108413], [40.987789, 29.108702], [40.98835, 29.10928], [40.990123, 29.111119], [40.990688, 29.111644], [40.991868, 29.112663], [40.992681, 29.113365], [40.993765, 29.114339], [40.994276, 29.114783], [40.995078, 29.115488], [40.995955, 29.116238], [40.996201, 29.11646], [40.99757, 29.117599], [40.99847, 29.118257], [40.999558, 29.118948], [41.001102, 29.119822], [41.002029, 29.120276], [41.002889, 29.120634], [41.00412, 29.121066], [41.004867, 29.12129], [41.005647, 29.121502], [41.006404, 29.121676], [41.007318, 29.121809], [41.008218, 29.121915], [41.008708, 29.121953], [41.009193, 29.121982], [41.009961, 29.121996], [41.010662, 29.122001], [41.012259, 29.121922], [41.01324, 29.121825], [41.014961, 29.121597], [41.016289, 29.121417], [41.017244, 29.121276], [41.017908, 29.121175], [41.01888, 29.121063], [41.020433, 29.12094], [41.021515, 29.120893], [41.022539, 29.120902], [41.023423, 29.120904], [41.024145, 29.120924], [41.026252, 29.120971], [41.027011, 29.120991], [41.029754, 29.121095], [41.031466, 29.121102], [41.033887, 29.121162], [41.035623, 29.121235], [41.036373, 29.121254], [41.042099, 29.121402], [41.042656, 29.121397], [41.043691, 29.121423], [41.045534, 29.121467], [41.046479, 29.121476], [41.047242, 29.121475], [41.048002, 29.121443], [41.049617, 29.121243], [41.050386, 29.121106], [41.051156, 29.120947], [41.051862, 29.12077], [41.052706, 29.120519], [41.05335, 29.120325], [41.054256, 29.119976], [41.054727, 29.119798], [41.055513, 29.119436], [41.056119, 29.119162], [41.057322, 29.118519], [41.058334, 29.117892], [41.059333, 29.117188], [41.060252, 29.116519], [41.061262, 29.115669], [41.06188, 29.11514], [41.062498, 29.114545], [41.062943, 29.114104], [41.064044, 29.112964], [41.066322, 29.110599], [41.070072, 29.106665], [41.071658, 29.105015], [41.07303, 29.103525], [41.076761, 29.09962], [41.076895, 29.099469], [41.0774, 29.098932], [41.078325, 29.098031], [41.07927, 29.097233], [41.080517, 29.096345], [41.081662, 29.095669], [41.082174, 29.0954], [41.082921, 29.095025], [41.08524, 29.094152], [41.085972, 29.09384], [41.086223, 29.093709], [41.086613, 29.093501], [41.086981, 29.093299], [41.087468, 29.092977], [41.087924, 29.092648], [41.088212, 29.092411], [41.088887, 29.091772], [41.089247, 29.09137], [41.089586, 29.090936], [41.089893, 29.09051], [41.090242, 29.089965], [41.090474, 29.089579], [41.090668, 29.089242], [41.09089, 29.088797], [41.091112, 29.088336], [41.091456, 29.087441], [41.091728, 29.086621], [41.091891, 29.085942], [41.091977, 29.085565], [41.09204, 29.085245], [41.092139, 29.084644], [41.092213, 29.084064], [41.092263, 29.083484], [41.092285, 29.083005], [41.092304, 29.081712], [41.092281, 29.080868], [41.092247, 29.080044], [41.092065, 29.076129], [41.092016, 29.075008], [41.091964, 29.073931], [41.091882, 29.072359], [41.091713, 29.068622], [41.091688, 29.068056], [41.091062, 29.054264], [41.090981, 29.052454], [41.090946, 29.051532], [41.09092, 29.05061], [41.090852, 29.048855], [41.09082, 29.048159], [41.090798, 29.04733], [41.090792, 29.046476], [41.090785, 29.046006], [41.090839, 29.043723], [41.090861, 29.043122], [41.090897, 29.04223], [41.090939, 29.041538], [41.091039, 29.039954], [41.091108, 29.039168], [41.091185, 29.038362], [41.091257, 29.037685], [41.091337, 29.036978], [41.091409, 29.036361], [41.091531, 29.035456], [41.091681, 29.034537], [41.092178, 29.032213], [41.092248, 29.03186], [41.092282, 29.031681], [41.092358, 29.031299], [41.092431, 29.030982], [41.092531, 29.030506], [41.092635, 29.030094], [41.092864, 29.029194], [41.092958, 29.028845], [41.093179, 29.028057], [41.093394, 29.027316], [41.09353, 29.026864], [41.093634, 29.026503], [41.093717, 29.026202], [41.093765, 29.025995], [41.093805, 29.025787], [41.093841, 29.02557], [41.093868, 29.025367], [41.093886, 29.025162], [41.093892, 29.024965], [41.093896, 29.024745], [41.093893, 29.024442], [41.093871, 29.024084], [41.093826, 29.023746], [41.093773, 29.023459], [41.093702, 29.023142], [41.093611, 29.022843], [41.093494, 29.022522], [41.093366, 29.022237], [41.093261, 29.022033], [41.093158, 29.021849], [41.093031, 29.021648], [41.092928, 29.021504], [41.092812, 29.021357], [41.092698, 29.021215], [41.092579, 29.021073], [41.092428, 29.020928], [41.09227, 29.020788], [41.092159, 29.020693], [41.091999, 29.020572], [41.091798, 29.020426], [41.091504, 29.020241], [41.091323, 29.020126], [41.091108, 29.019993], [41.090721, 29.019762], [41.090484, 29.019614], [41.090132, 29.019376], [41.0899, 29.019203], [41.089741, 29.019075], [41.089526, 29.018885], [41.089327, 29.018701], [41.089114, 29.018483], [41.088912, 29.018246], [41.088758, 29.018061], [41.088615, 29.017879], [41.088506, 29.017731], [41.088374, 29.017541], [41.087647, 29.016458], [41.087211, 29.015796], [41.086907, 29.01534], [41.086704, 29.015028], [41.0864, 29.01457], [41.085899, 29.013776], [41.085526, 29.01313], [41.085068, 29.01227], [41.084925, 29.01194], [41.084858, 29.011776], [41.08474, 29.011517], [41.084624, 29.011243], [41.084495, 29.010937], [41.084378, 29.010646], [41.084331, 29.010504], [41.084295, 29.010356], [41.084263, 29.010198], [41.084245, 29.010057], [41.084239, 29.009923], [41.084243, 29.009816], [41.084263, 29.009691], [41.084294, 29.009549], [41.084332, 29.009425], [41.08442, 29.009232], [41.084492, 29.009086], [41.084643, 29.00882], [41.084795, 29.008566], [41.085052, 29.008172], [41.085248, 29.007871], [41.085339, 29.007795], [41.085448, 29.007707], [41.085559, 29.007623], [41.085667, 29.007551], [41.08574, 29.007504], [41.08595, 29.007383], [41.086051, 29.007331], [41.08616, 29.007276], [41.086324, 29.007206], [41.086514, 29.007129], [41.086686, 29.007061], [41.08682, 29.007009], [41.086874, 29.006987], [41.086959, 29.006956], [41.086997, 29.006942], [41.087601, 29.006753], [41.088126, 29.006592], [41.089538, 29.00615], [41.089951, 29.00602], [41.090213, 29.005927], [41.090411, 29.005851], [41.09062, 29.005764], [41.090882, 29.005639], [41.091006, 29.005591], [41.091164, 29.005544], [41.091307, 29.005498], [41.091403, 29.00547], [41.091557, 29.005428], [41.091737, 29.005391], [41.092043, 29.005342], [41.09239, 29.005298], [41.092729, 29.005265], [41.09292, 29.005248], [41.093058, 29.005247], [41.093207, 29.005249], [41.093358, 29.005258], [41.093605, 29.005273], [41.093819, 29.005296], [41.09398, 29.005318], [41.094059, 29.00533], [41.094153, 29.005347], [41.094264, 29.00537], [41.094434, 29.005407], [41.094623, 29.005464], [41.094871, 29.005557], [41.09517, 29.005674], [41.095303, 29.005728], [41.095445, 29.005787], [41.095603, 29.005854], [41.095737, 29.005919], [41.095839, 29.005972], [41.095931, 29.006029], [41.09628, 29.006254], [41.096516, 29.006375], [41.097256, 29.006808], [41.09748, 29.006941], [41.097807, 29.007145], [41.098129, 29.007363], [41.0983, 29.007474], [41.098402, 29.007539], [41.098827, 29.007827], [41.09907, 29.007993], [41.099487, 29.008298], [41.09969, 29.008447], [41.099997, 29.008667], [41.100449, 29.008987], [41.100788, 29.009233], [41.101329, 29.009661], [41.101577, 29.009853], [41.101989, 29.010158], [41.102189, 29.010308], [41.102393, 29.010465], [41.102554, 29.010572], [41.102736, 29.010704], [41.103197, 29.01102], [41.103738, 29.011375], [41.103842, 29.011446], [41.103937, 29.01151], [41.10407, 29.011599], [41.104301, 29.011747], [41.104449, 29.011906], [41.104651, 29.012078], [41.104827, 29.01224], [41.105004, 29.012415], [41.105365, 29.012814], [41.105578, 29.013076], [41.10578, 29.013345], [41.106057, 29.013738], [41.106175, 29.01386], [41.106291, 29.013965], [41.106423, 29.014051], [41.106504, 29.01409], [41.10662, 29.014134], [41.106748, 29.014168], [41.106879, 29.014183], [41.107031, 29.01416], [41.107163, 29.014115], [41.107275, 29.014052], [41.107352, 29.013999], [41.107454, 29.013899], [41.107555, 29.013774], [41.107628, 29.013658], [41.107681, 29.013615], [41.107724, 29.013573], [41.10779, 29.013532], [41.107877, 29.01351], [41.107971, 29.013501], [41.108061, 29.01351], [41.108121, 29.013523], [41.108177, 29.013547], [41.108232, 29.013583], [41.108531, 29.013795], [41.108792, 29.013975], [41.108927, 29.014076], [41.109011, 29.014134], [41.10919, 29.014267], [41.109437, 29.014441], [41.10954, 29.014522], [41.109611, 29.014588], [41.109645, 29.014626], [41.109684, 29.014679], [41.109729, 29.014759], [41.109755, 29.014805], [41.109809, 29.014924], [41.10985, 29.01508], [41.109879, 29.015183], [41.109916, 29.015301], [41.109993, 29.015549], [41.110061, 29.015775], [41.110138, 29.016036], [41.11022, 29.01631], [41.11027, 29.016487], [41.110288, 29.016604], [41.110319, 29.016721], [41.110348, 29.016836], [41.110357, 29.016886], [41.110337, 29.016941], [41.110288, 29.017056], [41.110212, 29.017231], [41.110149, 29.017365], [41.110119, 29.017417], [41.110094, 29.01745], [41.110054, 29.017462], [41.110021, 29.017457], [41.109959, 29.017413], [41.10982, 29.017264], [41.10964, 29.017086], [41.10947, 29.016899], [41.109367, 29.016809], [41.10934, 29.016793], [41.109309, 29.016793], [41.109268, 29.016814], [41.109243, 29.016853], [41.109237, 29.01689], [41.109238, 29.016937], [41.109247, 29.017146], [41.109252, 29.017208], [41.109257, 29.017279], [41.109262, 29.017378], [41.109268, 29.017576], [41.109282, 29.017756], [41.109285, 29.017833], [41.109292, 29.017899], [41.10931, 29.017968], [41.10933, 29.018036], [41.109355, 29.018107], [41.109374, 29.018157], [41.109416, 29.018251], [41.109589, 29.018589], [41.109649, 29.018697], [41.109696, 29.018784], [41.109722, 29.018834], [41.109741, 29.018868], [41.109754, 29.018895], [41.109764, 29.018921], [41.109774, 29.018964], [41.109777, 29.018997], [41.109778, 29.019054], [41.109788, 29.01926], [41.109808, 29.01972], [41.109808, 29.01981], [41.109792, 29.019862], [41.109769, 29.019891], [41.109752, 29.019889], [41.109688, 29.019888], [41.109647, 29.019945], [41.109632, 29.01998], [41.109625, 29.020028], [41.109632, 29.020092], [41.109607, 29.020386]],
+                {"bubblingMouseEvents": true, "color": "#10b981", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#10b981", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.8, "smoothFactor": 1.0, "stroke": true, "weight": 5}
+            ).addTo(map_a47c408ad6d765d1688d2d89ac015725);
+        
+    
+        var popup_a1d3d599c30b1e4bd63086e8bb528b74 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_972685152dacb961f689defbeb63ba4a = $(`<div id="html_972685152dacb961f689defbeb63ba4a" style="width: 100.0%; height: 100.0%;"><b>Araç Rotası</b><br>44.0 km<br>48 dk</div>`)[0];
+                popup_a1d3d599c30b1e4bd63086e8bb528b74.setContent(html_972685152dacb961f689defbeb63ba4a);
+            
+        
+
+        poly_line_409b38a275842bad0132a775c36bea0d.bindPopup(popup_a1d3d599c30b1e4bd63086e8bb528b74)
+        ;
+
+        
+    
+</script>
+</html>

@@ -1,6 +1,4 @@
-"""
-LocationService - Konum işlemleri
-"""
+"""Location Service"""
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
@@ -10,32 +8,16 @@ from models.employee import Employee
 
 
 class LocationService:
-    """Konum oluşturma ve yönetimi"""
+    """Konum yönetimi"""
     
     def __init__(self, config):
-        """
-        Args:
-            config: Config objesi
-        """
         self.config = config
         self.office_location = config.OFFICE_LOCATION
         self.data_generator = DataGenerator()
     
     def generate_employees(self, count, seed=None):
-        """
-        Rastgele çalışan konumları oluştur
-        
-        Args:
-            count: Çalışan sayısı
-            seed: Random seed (tekrarlanabilirlik için)
-        
-        Returns:
-            list: Employee objeleri listesi
-        """
-        # DataGenerator kullan (OOP)
+        """Çalışan konumları oluştur"""
         df = self.data_generator.generate(n=count, seed=seed)
-        
-        # Employee objelerine dönüştür
         employees = []
         for _, row in df.iterrows():
             employee = Employee(

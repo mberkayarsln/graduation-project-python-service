@@ -1,49 +1,31 @@
-"""
-Cluster - Cluster sınıfı
-"""
-
+"""Cluster model"""
 
 class Cluster:
-    """Bir çalışan kümesini temsil eder"""
+    """Çalışan kümesi"""
     
     def __init__(self, id, center):
-        """
-        Args:
-            id: Cluster ID
-            center: Merkez koordinatı (lat, lon)
-        """
         self.id = id
-        self.center = center  # (lat, lon) tuple
-        self.employees = []   # Employee listesi
-        self.route = None     # Route objesi
-        self.vehicle = None   # Vehicle objesi
+        self.center = center
+        self.employees = []
+        self.route = None
+        self.vehicle = None
+        self.stops = []
+        self.stop_assignments = {}
+        self.stop_loads = []
     
     def add_employee(self, employee):
-        """
-        Cluster'a çalışan ekle
-        
-        Args:
-            employee: Employee objesi
-        """
+        """Çalışan ekle"""
         self.employees.append(employee)
         employee.cluster_id = self.id
     
     def remove_employee(self, employee):
-        """Çalışanı cluster'dan çıkar"""
+        """Çalışan çıkar"""
         if employee in self.employees:
             self.employees.remove(employee)
             employee.cluster_id = None
     
     def filter_by_distance(self, max_distance):
-        """
-        Merkeze uzak çalışanları filtrele
-        
-        Args:
-            max_distance: Maksimum mesafe (metre)
-        
-        Returns:
-            int: Hariç tutulan çalışan sayısı
-        """
+        """Uzak çalışanları filtrele (metre)"""
         excluded_count = 0
         center_lat, center_lon = self.center
         
@@ -60,38 +42,51 @@ class Cluster:
         return [emp for emp in self.employees if not emp.excluded]
     
     def get_employee_count(self, include_excluded=False):
-        """
-        Çalışan sayısı
-        
-        Args:
-            include_excluded: Hariç tutulanları da say
-        
-        Returns:
-            int: Çalışan sayısı
-        """
+        """Çalışan sayısı"""
         if include_excluded:
             return len(self.employees)
         return len(self.get_active_employees())
     
     def get_employee_locations(self, include_excluded=False):
-        """
-        Çalışan konumlarını liste olarak döndür
-        
-        Returns:
-            list: [(lat, lon), ...]
-        """
+        """Çalışan lokasyonları: [(lat, lon), ...]"""
         employees = self.employees if include_excluded else self.get_active_employees()
         return [emp.get_location() for emp in employees]
     
     def assign_route(self, route):
-        """Cluster'a rota ata"""
+        """Rota ata"""
         self.route = route
         route.cluster = self
     
     def assign_vehicle(self, vehicle):
-        """Cluster'a araç ata"""
+        """Araç ata"""
         self.vehicle = vehicle
         vehicle.cluster = self
+    
+    def set_stops(self, stops, assignments, stop_loads):
+        """Durak kaydet"""
+        self.stops = stops
+        self.stop_loads = stop_loads
+        
+
+        self.stop_assignments = {}
+        active_employees = self.get_active_employees()
+        
+        for i, employee in enumerate(active_employees):
+            if i < len(assignments):
+                self.stop_assignments[employee.id] = assignments[i]
+    
+    def get_employee_stop(self, employee):
+        """Çalışanın durağı: (index, location)"""
+        if employee.id in self.stop_assignments:
+            stop_index = self.stop_assignments[employee.id]
+            if stop_index < len(self.stops):
+                return stop_index, self.stops[stop_index]
+        
+        return None, None
+    
+    def has_stops(self):
+        """Durak var mı?"""
+        return len(self.stops) > 0
     
     def get_stats(self):
         """Cluster istatistikleri"""
@@ -106,8 +101,14 @@ class Cluster:
             'active_employees': active,
             'excluded_employees': excluded,
             'has_route': self.route is not None,
-            'has_vehicle': self.vehicle is not None
+            'has_vehicle': self.vehicle is not None,
+            'has_stops': self.has_stops(),
+            'n_stops': len(self.stops)
         }
+        
+        if self.has_stops():
+            stats['stop_loads'] = self.stop_loads
+            stats['avg_load_per_stop'] = sum(self.stop_loads) / len(self.stop_loads) if self.stop_loads else 0
         
         if self.route:
             stats['route_distance_km'] = self.route.distance_km

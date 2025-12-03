@@ -17,7 +17,15 @@ class Config:
     # Çalışan ve cluster ayarları
     NUM_EMPLOYEES = 100
     NUM_CLUSTERS = 10
-    MAX_DISTANCE_FROM_CENTER = 2000  # metre cinsinden (2km)
+    MAX_DISTANCE_FROM_CENTER = 2500  # metre cinsinden (5km)
+    
+    # Durak sistemi ayarları
+    EMPLOYEES_PER_STOP = 2  # Durak başına ideal çalışan sayısı
+    MIN_STOPS_PER_CLUSTER = 1  # Cluster başına minimum durak sayısı
+    MAX_STOPS_PER_CLUSTER = 15  # Cluster başına maksimum durak sayısı
+    MAX_WALK_DISTANCE = 500  # Maksimum yürüme mesafesi (metre)
+    SNAP_STOPS_TO_ROADS = True  # Durakları ana yollara yerleştir
+    ROAD_SNAP_MAX_DISTANCE = 500  # Ana yola maksimum snap mesafesi (metre)
     
     # Trafik API ayarları
     USE_TRAFFIC = False
@@ -32,18 +40,17 @@ class Config:
             tomorrow_8am += timedelta(days=1)
         return tomorrow_8am
     
-    # Görselleştirme renkleri
     CLUSTER_COLORS = [
-        '#ef4444',  # Kırmızı
-        '#3b82f6',  # Mavi
-        '#10b981',  # Yeşil
-        '#f59e0b',  # Turuncu
-        '#8b5cf6',  # Mor
-        '#ec4899',  # Pembe
-        '#14b8a6',  # Turkuaz
-        '#06b6d4',  # Açık Mavi
-        '#84cc16',  # Limon Yeşili
-        '#f97316'   # Koyu Turuncu
+        '#ef4444',  
+        '#3b82f6',  
+        '#10b981',  
+        '#f59e0b',  
+        '#8b5cf6',  
+        '#ec4899',  
+        '#14b8a6',  
+        '#06b6d4',  
+        '#84cc16',  
+        '#f97316'   
     ]
     
     # Çıktı dosyaları
