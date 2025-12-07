@@ -213,7 +213,7 @@ class ServicePlanner:
         
         # Trafik verisi ekle (eğer aktifse)
         if use_traffic and self.traffic_service.is_enabled():
-            print(f"🚦 Trafik verileri ekleniyor...")
+            print(f"Trafik verileri ekleniyor...")
             success = self.traffic_service.add_traffic_data_to_routes(routes)
             print(f"    OK: {success}/{len(routes)} rotaya trafik verisi eklendi")
         
