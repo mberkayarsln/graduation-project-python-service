@@ -38,10 +38,10 @@ ENV/
 .ipynb_checkpoints
 
 # output files
-maps/*.html
+maps/
+data/*.json
 
 # keep directories but not their contents
-!maps/.gitkeep
 !data/.gitkeep
 
 # OSM data files (large)
