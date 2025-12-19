@@ -10,11 +10,13 @@ class Employee:
         self.cluster_id = None
         self.excluded = False
         self.excluded = False
-        self.exclusion_reason = None
+        self.exclusion_reason = ""
         self.pickup_point = None
+        self.pickup_type = "route"  # 'route' (fallback) or 'stop' (safe osm stop)
     
-    def set_pickup_point(self, lat, lon):
+    def set_pickup_point(self, lat, lon, type="route"):
         self.pickup_point = (lat, lon)
+        self.pickup_type = type
     
     def distance_to(self, other_lat, other_lon):
         R = 6371000

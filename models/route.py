@@ -94,27 +94,50 @@ class Route:
         return f"Route(stops={len(self.stops)}, distance={self.distance_km:.1f}km)"
     
     
-    def match_employees_to_route(self, employees):
+    def match_employees_to_route(self, employees, safe_stops=None):
         if not self.coordinates or len(self.coordinates) < 2:
             return 0
         
         try:
-            from shapely.geometry import Point, LineString
+            from shapely.geometry import Point, LineString, MultiPoint
             from shapely.ops import nearest_points
             
             line = LineString(self.coordinates)
             matched_count = 0
             
+            
+            valid_route_stops = [s for s in self.stops] if self.stops else []
+            
+            if safe_stops and len(safe_stops) > 0:
+                for s in safe_stops:
+                    s_point = Point(s[0], s[1])
+                    if line.distance(s_point) < 0.00015:
+                        valid_route_stops.append(s)
+            
+            valid_stops_multipoint = None
+            if valid_route_stops:
+                try:
+                    valid_stops_multipoint = MultiPoint([(s[0], s[1]) for s in valid_route_stops])
+                except Exception as e:
+                     print(f"Error creating MultiPoint from stops: {e}")
+            
             for employee in employees:
                 if employee.excluded:
                     continue
                 
-                point = Point(employee.lat, employee.lon)
+                emp_point = Point(employee.lat, employee.lon)
                 
-                distance_on_line = line.project(point)
-                nearest_point = line.interpolate(distance_on_line)
+                distance_on_line = line.project(emp_point)
+                ideal_point = line.interpolate(distance_on_line)
+                final_pickup = (ideal_point.x, ideal_point.y)
+                pickup_type = "route"
                 
-                employee.set_pickup_point(nearest_point.x, nearest_point.y)
+                if valid_stops_multipoint:
+                    nearest_stop = nearest_points(emp_point, valid_stops_multipoint)[1]
+                    final_pickup = (nearest_stop.x, nearest_stop.y)
+                    pickup_type = "stop"
+                        
+                employee.set_pickup_point(final_pickup[0], final_pickup[1], type=pickup_type)
                 matched_count += 1
                 
             return matched_count

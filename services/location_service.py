@@ -26,6 +26,9 @@ class LocationService:
         
         return employees
     
+    def get_transit_stops(self):
+        return self.data_generator.get_transit_stops()
+    
     def get_office_location(self):
         return self.office_location
     

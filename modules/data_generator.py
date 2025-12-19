@@ -25,7 +25,36 @@ class DataGenerator:
             )
             
             self._urban_area = landuse.unary_union
+            self._urban_area = landuse.unary_union
             self._bounds = landuse.total_bounds
+            
+    def get_transit_stops(self):
+        self._load_osm_data()
+        
+        custom_filter = {
+            "highway": ["bus_stop"],
+            "railway": ["subway_entrance", "tram_stop"],
+            "public_transport": ["platform", "stop_position"],
+            "amenity": ["bus_station"]
+        }
+        
+        stops = self._osm.get_data_by_custom_criteria(
+            custom_filter=custom_filter,
+            filter_type="keep",
+            keep_nodes=True,
+            keep_ways=False,
+            keep_relations=False
+        )
+        
+        if stops is None or len(stops) == 0:
+            return []
+            
+        stops_list = []
+        for _, row in stops.iterrows():
+            if hasattr(row.geometry, 'y') and hasattr(row.geometry, 'x'):
+                stops_list.append((row.geometry.y, row.geometry.x))
+                
+        return stops_list
     
     def generate(self, n=100, seed=42):
         self._load_osm_data()

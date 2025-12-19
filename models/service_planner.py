@@ -22,9 +22,12 @@ class ServicePlanner:
         self.clustering_service = ClusteringService(config)
         self.routing_service = RoutingService(config)
         self.traffic_service = TrafficService(config)
+        self.routing_service = RoutingService(config)
+        self.traffic_service = TrafficService(config)
         self.visualization_service = VisualizationService(config)
         
         self.stats = {}
+        self.safe_stops = []
     
     def generate_employees(self, count=None, seed=None):
         count = count or self.config.NUM_EMPLOYEES
@@ -137,7 +140,7 @@ class ServicePlanner:
         for i, cluster in enumerate(self.clusters):
             if cluster.route:
                 print(f"   Matching employees to route for cluster {cluster.id}...")
-                matched = cluster.route.match_employees_to_route(cluster.employees)
+                matched = cluster.route.match_employees_to_route(cluster.employees, safe_stops=self.safe_stops)
                 print(f"   Matched {matched} employees to route points")
 
             if cluster.route:
@@ -247,10 +250,13 @@ class ServicePlanner:
         print("\n" + "=" * 50)
         print("        SERVİS ROTA OPTİMİZASYONU (OOP)")
         print("=" * 50)
-        print(f"Çalışan Sayısı: {self.config.NUM_EMPLOYEES}")
-        print(f"Cluster Sayısı: {self.config.NUM_CLUSTERS}")
+        print(f"   Config: {self.config.NUM_EMPLOYEES} employees, {self.config.NUM_CLUSTERS} clusters")
         print(f"Trafik Analizi: {'✓ Aktif' if self.config.USE_TRAFFIC else '✗ Pasif'}")
         print("=" * 50 + "\n")
+        
+        print("[0] Loading Safe Pickup Points (Bus/Metro Stops)...")
+        self.safe_stops = self.location_service.get_transit_stops()
+        print(f"    OK: {len(self.safe_stops)} safe stops loaded from OSM")
         
         self.generate_employees()
         
