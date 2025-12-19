@@ -188,17 +188,6 @@ class VisualizationService:
                     target_location = employee.pickup_point if hasattr(employee, 'pickup_point') and employee.pickup_point else stop_location
                     
                     if target_location:
-                        walk_distance = employee.distance_to(target_location[0], target_location[1])
-                        
-                        folium.PolyLine(
-                            [employee.get_location(), target_location],
-                            color=color,
-                            weight=1.5,
-                            opacity=0.6,
-                            dash_array='5, 5',
-                            popup=f"Yürüme: {employee.id} → Rota"
-                        ).add_to(m)
-                        
                         folium.CircleMarker(
                             location=employee.get_location(),
                             radius=3,
@@ -207,16 +196,6 @@ class VisualizationService:
                             fill_opacity=0.5,
                             popup=f"<b>ID:</b> {employee.id}<br>"
                         ).add_to(m)
-                        
-                        # Only indicate if it is a safe stop found in OSM
-                        is_safe_stop = hasattr(employee, 'pickup_type') and employee.pickup_type == 'stop'
-                        
-                        if target_location and is_safe_stop:
-                            folium.Marker(
-                                location=target_location,
-                                icon=folium.Icon(color='green', icon='bus', prefix='fa', icon_size=(24,24)),
-                                popup="Taşıt Durağı (Güvenli Nokta)"
-                            ).add_to(m)
             else:
                 for i, stop in enumerate(route.stops):
                     folium.CircleMarker(
@@ -373,8 +352,6 @@ class VisualizationService:
                     weight=2
                 ).add_to(m)
                 
-                # Add a distinct marker for the safe pickup point itself (if it's different from a regular stop)
-                # Only indicate if it is a safe stop found in OSM
                 is_safe_stop = hasattr(employee, 'pickup_type') and employee.pickup_type == 'stop'
                 
                 if is_safe_stop:
