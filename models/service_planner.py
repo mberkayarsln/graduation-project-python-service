@@ -133,7 +133,13 @@ class ServicePlanner:
             if route:
                 routes.append(route)
         
+        
         for i, cluster in enumerate(self.clusters):
+            if cluster.route:
+                print(f"   Matching employees to route for cluster {cluster.id}...")
+                matched = cluster.route.match_employees_to_route(cluster.employees)
+                print(f"   Matched {matched} employees to route points")
+
             if cluster.route:
                 active = cluster.get_employee_count(include_excluded=False)
                 if use_stops and cluster.has_stops():

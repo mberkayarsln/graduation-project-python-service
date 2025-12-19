@@ -93,6 +93,39 @@ class Route:
     def __repr__(self):
         return f"Route(stops={len(self.stops)}, distance={self.distance_km:.1f}km)"
     
+    
+    def match_employees_to_route(self, employees):
+        if not self.coordinates or len(self.coordinates) < 2:
+            return 0
+        
+        try:
+            from shapely.geometry import Point, LineString
+            from shapely.ops import nearest_points
+            
+            line = LineString(self.coordinates)
+            matched_count = 0
+            
+            for employee in employees:
+                if employee.excluded:
+                    continue
+                
+                point = Point(employee.lat, employee.lon)
+                
+                distance_on_line = line.project(point)
+                nearest_point = line.interpolate(distance_on_line)
+                
+                employee.set_pickup_point(nearest_point.x, nearest_point.y)
+                matched_count += 1
+                
+            return matched_count
+            
+        except ImportError:
+            print("Shapely module not found. Skipping route matching.")
+            return 0
+        except Exception as e:
+            print(f"Error matching employees to route: {e}")
+            return 0
+
     def __str__(self):
         traffic_info = f", +{self.traffic_delay_min:.0f}dk trafik" if self.has_traffic_data else ""
         return f"Rota: {len(self.stops)} durak, {self.distance_km:.1f}km, {self.duration_min:.0f}dk{traffic_info}"

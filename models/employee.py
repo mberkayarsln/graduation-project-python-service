@@ -9,7 +9,12 @@ class Employee:
         self.name = name or f"Çalışan {id}"
         self.cluster_id = None
         self.excluded = False
+        self.excluded = False
         self.exclusion_reason = None
+        self.pickup_point = None
+    
+    def set_pickup_point(self, lat, lon):
+        self.pickup_point = (lat, lon)
     
     def distance_to(self, other_lat, other_lon):
         R = 6371000

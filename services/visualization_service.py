@@ -82,13 +82,13 @@ class VisualizationService:
             icon=folium.Icon(color='red', icon='home', prefix='fa')
         ).add_to(m)
         
-        # radius_km = self.config.MAX_DISTANCE_FROM_CENTER / 1000 
+        """ radius_km = self.config.MAX_DISTANCE_FROM_CENTER / 1000 
         
         for cluster in clusters:
             color = self._get_cluster_color(cluster.id)
             folium.Circle(
                 location=cluster.center,
-                # radius=self.config.MAX_DISTANCE_FROM_CENTER, 
+                radius=self.config.MAX_DISTANCE_FROM_CENTER, 
                 color=color,
                 fill=True,
                 fillColor=color,
@@ -96,9 +96,10 @@ class VisualizationService:
                 weight=2,
                 opacity=0.5,
                 popup=f"<b>Cluster {cluster.id}</b><br>"
-            ).add_to(m)
+            ).add_to(m) 
+        """
             
-            folium.Marker(
+        folium.Marker(
                 location=cluster.center,
                 popup=f"<b>Cluster {cluster.id}</b><br>"
                       f"Merkez<br>",
@@ -184,14 +185,18 @@ class VisualizationService:
                 for employee in cluster.get_active_employees():
                     stop_index, stop_location = cluster.get_employee_stop(employee)
                     
-                    if stop_location:
+                    target_location = employee.pickup_point if hasattr(employee, 'pickup_point') and employee.pickup_point else stop_location
+                    
+                    if target_location:
+                        walk_distance = employee.distance_to(target_location[0], target_location[1])
+                        
                         folium.PolyLine(
-                            [employee.get_location(), stop_location],
+                            [employee.get_location(), target_location],
                             color=color,
-                            weight=1,
-                            opacity=0.3,
+                            weight=1.5,
+                            opacity=0.6,
                             dash_array='5, 5',
-                            popup=f"Yürüme: {employee.id} → Durak {stop_index+1}"
+                            popup=f"Yürüme: {employee.id} → Rota"
                         ).add_to(m)
                         
                         folium.CircleMarker(
@@ -201,7 +206,6 @@ class VisualizationService:
                             fill=True,
                             fill_opacity=0.5,
                             popup=f"<b>ID:</b> {employee.id}<br>"
-                                  f"<b>Durak:</b> {stop_index+1}"
                         ).add_to(m)
             else:
                 for i, stop in enumerate(route.stops):
@@ -254,17 +258,17 @@ class VisualizationService:
             icon=folium.Icon(color='red', icon='home', prefix='fa')
         ).add_to(m)
         
-        # radius_km = self.config.MAX_DISTANCE_FROM_CENTER / 1000
+        """ radius_km = self.config.MAX_DISTANCE_FROM_CENTER / 1000
         folium.Circle(
             location=cluster.center,
-            # radius=self.config.MAX_DISTANCE_FROM_CENTER,
+            radius=self.config.MAX_DISTANCE_FROM_CENTER,
             color=color,
             fill=True,
             fillColor=color,
             fillOpacity=0.15,
             weight=2,
             opacity=0.6,
-        ).add_to(m)
+        ).add_to(m) """
         
         folium.Marker(
             location=cluster.center,
@@ -317,14 +321,34 @@ class VisualizationService:
             else:
                 stop_index, stop_location = cluster.get_employee_stop(employee)
                 
-                if stop_location and cluster.has_stops():
+                target_location = employee.pickup_point if hasattr(employee, 'pickup_point') and employee.pickup_point else stop_location
+                
+                if target_location:
+                    walk_distance = employee.distance_to(target_location[0], target_location[1])
+                    
                     folium.PolyLine(
-                        [employee.get_location(), stop_location],
+                        [employee.get_location(), target_location],
                         color=color,
                         weight=1.5,
-                        opacity=0.4,
+                        opacity=0.6,
                         dash_array='5, 5',
-                        popup=f"Yürüme: {employee.id} → Durak {stop_index+1}"
+                        popup=f"Pick-up: {employee.id}"
+                    ).add_to(m)
+                    
+                    midpoint = [
+                        (employee.lat + target_location[0]) / 2,
+                        (employee.lon + target_location[1]) / 2
+                    ]
+                    
+                    folium.Marker(
+                        location=midpoint,
+                        icon=folium.DivIcon(icon_size=(100, 20), icon_anchor=(50, 10), html=f"""
+                            <div style="font-size: 10px; color: {color}; font-weight: bold; 
+                                 background: rgba(255, 255, 255, 0.7); padding: 0 2px; border-radius: 3px;
+                                 text-align: center; width: auto; display: inline-block;">
+                                {walk_distance:.0f}m
+                            </div>
+                        """)
                     ).add_to(m)
                 
                 folium.CircleMarker(
@@ -380,7 +404,7 @@ class VisualizationService:
         </div>
         """
         
-        m.get_root().html.add_child(folium.Element(info_html))
+        # m.get_root().html.add_child(folium.Element(info_html))
         
         m.save(filename)
         return filename
