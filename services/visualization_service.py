@@ -1,4 +1,3 @@
-"""Visualization Service"""
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
@@ -6,34 +5,28 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 import folium
 
 
-class VisualizationService:
-    """Harita görselleştirme"""
-    
+class VisualizationService:    
     def __init__(self, config):
         self.config = config
         self.office_location = config.OFFICE_LOCATION
     
     def create_employees_map(self, employees):
-        """Çalışan haritası"""
         filename = "maps/employees.html"
         
         if not employees:
             return filename
         
-        # Ortalama konum
         avg_lat = sum(emp.lat for emp in employees) / len(employees)
         avg_lon = sum(emp.lon for emp in employees) / len(employees)
         
         m = folium.Map(location=[avg_lat, avg_lon], zoom_start=12)
         
-        # Ofis
         folium.Marker(
             location=self.office_location,
             popup="<b>Ofis</b>",
             icon=folium.Icon(color='red', icon='home', prefix='fa')
         ).add_to(m)
         
-        # Çalışanlar
         for emp in employees:
             folium.CircleMarker(
                 location=[emp.lat, emp.lon],
@@ -48,10 +41,8 @@ class VisualizationService:
         return filename
     
     def create_clusters_map(self, clusters):
-        """Cluster haritası"""
         filename = "maps/clusters.html"
         
-        # Tüm çalışanları topla
         all_employees = []
         for cluster in clusters:
             all_employees.extend(cluster.employees)
@@ -59,32 +50,26 @@ class VisualizationService:
         if not all_employees:
             return filename
         
-        # Ortalama konum
         avg_lat = sum(emp.lat for emp in all_employees) / len(all_employees)
         avg_lon = sum(emp.lon for emp in all_employees) / len(all_employees)
         
         m = folium.Map(location=[avg_lat, avg_lon], zoom_start=12)
         
-        # Renkler
         colors = self.config.CLUSTER_COLORS
         
-        # Ofis
         folium.Marker(
             location=self.office_location,
             popup="<b>Ofis</b>",
             icon=folium.Icon(color='red', icon='home', prefix='fa')
         ).add_to(m)
         
-        # Cluster merkezleri ve kapsama daireleri
-        radius_km = self.config.MAX_DISTANCE_FROM_CENTER / 1000  # metre → km
+        radius_km = self.config.MAX_DISTANCE_FROM_CENTER / 1000 
         
         for cluster in clusters:
             color = colors[cluster.id % len(colors)]
-            
-            # Kapsama dairesi (yarıçap)
             folium.Circle(
                 location=cluster.center,
-                radius=self.config.MAX_DISTANCE_FROM_CENTER,  # metre
+                radius=self.config.MAX_DISTANCE_FROM_CENTER, 
                 color=color,
                 fill=True,
                 fillColor=color,
@@ -95,7 +80,6 @@ class VisualizationService:
                       f"Yarıçap: {radius_km:.1f} km"
             ).add_to(m)
             
-            # Merkez noktası
             folium.Marker(
                 location=cluster.center,
                 popup=f"<b>Cluster {cluster.id}</b><br>"
@@ -104,7 +88,6 @@ class VisualizationService:
                 icon=folium.Icon(color='black', icon='star', prefix='fa')
             ).add_to(m)
         
-        # Çalışanlar
         for emp in all_employees:
             cluster_id = emp.cluster_id
             color = colors[cluster_id % len(colors)]
@@ -122,10 +105,8 @@ class VisualizationService:
         return filename
     
     def create_routes_map(self, clusters):
-        """Rota haritası"""
         filename = "maps/optimized_routes.html"
         
-        # Routes dict oluştur
         routes_dict = {}
         for cluster in clusters:
             if cluster.route:
@@ -136,22 +117,18 @@ class VisualizationService:
         
         m = folium.Map(location=self.office_location, zoom_start=11)
         
-        # Renkler
         colors = self.config.CLUSTER_COLORS
         
-        # Ofis
         folium.Marker(
             location=self.office_location,
             popup="<b>Ofis</b>",
             icon=folium.Icon(color='red', icon='home', prefix='fa')
         ).add_to(m)
         
-        # Her cluster için rota çiz
         for cluster_id, route in routes_dict.items():
             cluster = clusters[int(cluster_id)]
             color = colors[int(cluster_id) % len(colors)]
             
-            # Rota çizgisi (araç rotası)
             if route.coordinates:
                 folium.PolyLine(
                     route.coordinates,
@@ -161,17 +138,13 @@ class VisualizationService:
                     popup=f"<b>Araç Rotası - Cluster {cluster_id}</b>"
                 ).add_to(m)
             
-            # DURAK SİSTEMİ: Duraklar ve yürüme çizgileri
             if cluster.has_stops():
-                # Rota sırasına göre durak mapping oluştur
                 stop_order_map = {}
                 if route and route.stops:
-                    # Ofis hariç durakları al (son nokta ofis)
                     route_stops = route.stops[:-1] if len(route.stops) > 1 else route.stops
                     for order, stop in enumerate(route_stops):
                         stop_order_map[stop] = order + 1
                 
-                # Durak noktaları
                 for i, (stop_lat, stop_lon) in enumerate(cluster.stops):
                     load = cluster.stop_loads[i] if i < len(cluster.stop_loads) else 0
                     stop_tuple = (stop_lat, stop_lon)
@@ -193,7 +166,6 @@ class VisualizationService:
                         """)
                     ).add_to(m)
                 
-                # Çalışan → Durak yürüme çizgileri
                 for employee in cluster.get_active_employees():
                     stop_index, stop_location = cluster.get_employee_stop(employee)
                     
@@ -207,7 +179,6 @@ class VisualizationService:
                             popup=f"Yürüme: {employee.id} → Durak {stop_index+1}"
                         ).add_to(m)
                         
-                        # Çalışan noktası (küçük)
                         folium.CircleMarker(
                             location=employee.get_location(),
                             radius=3,
@@ -218,7 +189,6 @@ class VisualizationService:
                                   f"<b>Durak:</b> {stop_index+1}"
                         ).add_to(m)
             else:
-                # ESKİ SİSTEM: Direkt çalışan konumları
                 for i, stop in enumerate(route.stops):
                     folium.CircleMarker(
                         location=stop,
@@ -229,7 +199,6 @@ class VisualizationService:
                         popup=f"<b>Cluster {cluster_id}</b><br>Nokta {i}"
                     ).add_to(m)
             
-            # Cluster bilgisi
             center = cluster.center
             n_stops = len(cluster.stops) if cluster.has_stops() else len(route.stops)
             
@@ -255,27 +224,21 @@ class VisualizationService:
         return filename
     
     def create_cluster_detail_map(self, cluster):
-        """Detaylı cluster haritası"""
         import os
         
-        # Klasör oluştur
         os.makedirs("maps/detailed", exist_ok=True)
         
         filename = f"maps/detailed/cluster_{cluster.id}_detail.html"
-        
-        # Cluster merkezi odaklı harita
         m = folium.Map(location=cluster.center, zoom_start=14)
         
         color = self.config.CLUSTER_COLORS[cluster.id % len(self.config.CLUSTER_COLORS)]
         
-        # Ofis
         folium.Marker(
             location=self.office_location,
             popup="<b>Ofis</b>",
             icon=folium.Icon(color='red', icon='home', prefix='fa')
         ).add_to(m)
         
-        # Kapsama dairesi
         radius_km = self.config.MAX_DISTANCE_FROM_CENTER / 1000
         folium.Circle(
             location=cluster.center,
@@ -289,16 +252,13 @@ class VisualizationService:
             popup=f"Kapsama Alanı<br>{radius_km:.1f} km"
         ).add_to(m)
         
-        # Cluster merkezi
         folium.Marker(
             location=cluster.center,
             popup=f"<b>Cluster {cluster.id} Merkezi</b>",
             icon=folium.Icon(color='black', icon='star', prefix='fa')
         ).add_to(m)
         
-        # Duraklar
         if cluster.has_stops():
-            # Rota sırasına göre durak mapping
             stop_order_map = {}
             if cluster.route and cluster.route.stops:
                 route_stops = cluster.route.stops[:-1] if len(cluster.route.stops) > 1 else cluster.route.stops
@@ -326,10 +286,8 @@ class VisualizationService:
                     """)
                 ).add_to(m)
         
-        # Çalışanlar (aktif + hariç tutulan)
         for employee in cluster.employees:
             if employee.excluded:
-                # Hariç tutulan çalışanlar (gri)
                 folium.CircleMarker(
                     location=employee.get_location(),
                     radius=4,
@@ -343,10 +301,8 @@ class VisualizationService:
                     weight=1
                 ).add_to(m)
             else:
-                # Aktif çalışanlar
                 stop_index, stop_location = cluster.get_employee_stop(employee)
                 
-                # Yürüme çizgisi (çalışan → durak)
                 if stop_location and cluster.has_stops():
                     folium.PolyLine(
                         [employee.get_location(), stop_location],
@@ -369,7 +325,6 @@ class VisualizationService:
                     weight=2
                 ).add_to(m)
         
-        # Rota çizgisi (varsa)
         if cluster.route and cluster.route.coordinates:
                 folium.PolyLine(
                     cluster.route.coordinates,
@@ -379,7 +334,7 @@ class VisualizationService:
                     popup=f"<b>Araç Rotası</b><br>"
                           f"{cluster.route.distance_km:.1f} km<br>"
                           f"{cluster.route.duration_min:.0f} dk"
-            ).add_to(m)        # Bilgi kutusu
+            ).add_to(m)
         info_html = f"""
         <div style="position: fixed; 
                     top: 10px; right: 10px; 
@@ -417,23 +372,15 @@ class VisualizationService:
         return filename
     
     def create_all_maps(self, clusters):
-        """Tüm haritalar"""
         files = []
-        
-        # 1. Çalışan haritası
         all_employees = []
         for cluster in clusters:
             all_employees.extend(cluster.employees)
         
         files.append(self.create_employees_map(all_employees))
-        
-        # 2. Cluster haritası
         files.append(self.create_clusters_map(clusters))
-        
-        # 3. Rotalar haritası
         files.append(self.create_routes_map(clusters))
         
-        # 4. Her cluster için detaylı harita
         for cluster in clusters:
             detail_file = self.create_cluster_detail_map(cluster)
             files.append(detail_file)

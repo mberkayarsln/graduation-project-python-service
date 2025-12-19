@@ -1,8 +1,4 @@
-"""Route model"""
-
-
 class Route:
-    """Rota"""
     
     def __init__(self, cluster=None):
         self.cluster = cluster
@@ -16,23 +12,18 @@ class Route:
         self.has_traffic_data = False
     
     def set_stops(self, stops):
-        """Durakları ayarla"""
         self.stops = stops
     
     def set_coordinates(self, coordinates):
-        """Yol koordinatları ayarla"""
         self.coordinates = coordinates
     
     def add_stop(self, lat, lon):
-        """Durak ekle"""
         self.stops.append((lat, lon))
     
     def set_distance(self, distance_km):
-        """Mesafe ayarla"""
         self.distance_km = distance_km
     
     def set_duration(self, duration_min, no_traffic_min=None):
-        """Süre ayarla"""
         self.duration_min = duration_min
         if no_traffic_min:
             self.duration_no_traffic_min = no_traffic_min
@@ -40,7 +31,6 @@ class Route:
             self.has_traffic_data = True
     
     def set_traffic_data(self, traffic_info):
-        """Trafik verisi ekle"""
         self.coordinates = traffic_info.get('coordinates', [])
         self.distance_km = traffic_info.get('distance_km', 0)
         self.duration_min = traffic_info.get('duration_with_traffic_min', 0)
@@ -49,21 +39,17 @@ class Route:
         self.has_traffic_data = True
     
     def mark_optimized(self):
-        """Optimize edildi"""
         self.optimized = True
     
     def get_stop_count(self):
-        """Durak sayısı"""
         return len(self.stops)
     
     def get_avg_speed_kmh(self):
-        """Ortalama hız"""
         if self.duration_min > 0:
             return (self.distance_km / self.duration_min) * 60
         return 0
     
     def calculate_stats_from_stops(self):
-        """İstatistik hesapla"""
         if not self.stops or len(self.stops) < 2:
             self.distance_km = 0
             self.duration_min = 0
@@ -81,7 +67,6 @@ class Route:
         self.duration_min = (self.distance_km / avg_speed_kmh) * 60
     
     def get_stats(self):
-        """Rota istatistikleri"""
         stats = {
             'stops': len(self.stops),
             'distance_km': round(self.distance_km, 2),
@@ -98,7 +83,6 @@ class Route:
         return stats
     
     def to_dict(self):
-        """Dict dönüştür"""
         return {
             'coordinates': self.coordinates if self.coordinates else self.stops,
             'stops': self.stops,

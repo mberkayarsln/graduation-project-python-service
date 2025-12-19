@@ -1,10 +1,7 @@
-"""Vehicle model"""
 from datetime import datetime
 
 
 class Vehicle:
-    """Servis aracı"""
-    
     def __init__(self, id, capacity=50, vehicle_type="Minibüs"):
         self.id = id
         self.capacity = capacity
@@ -15,36 +12,28 @@ class Vehicle:
         self.driver_name = None
     
     def assign_cluster(self, cluster):
-        """Cluster ata"""
         self.cluster = cluster
         self.route = cluster.route if cluster else None
     
     def set_departure_time(self, departure_time):
-        """Kalkış saati"""
         self.departure_time = departure_time
     
     def set_driver(self, driver_name):
-        """Sürücü ata"""
         self.driver_name = driver_name
     
     def can_accommodate(self, employee_count):
-        """Kapasite kontrolü"""
         return employee_count <= self.capacity
     
     def get_occupancy_rate(self):
-        """Doluluk oranı (%)
-        """
         if self.cluster:
             employee_count = self.cluster.get_employee_count()
             return (employee_count / self.capacity) * 100
         return 0
     
     def is_full(self):
-        """Araç dolu mu?"""
         return self.get_occupancy_rate() >= 100
     
     def get_stats(self):
-        """Araç istatistikleri"""
         stats = {
             'id': self.id,
             'type': self.vehicle_type,

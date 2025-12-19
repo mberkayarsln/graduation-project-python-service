@@ -1,4 +1,3 @@
-"""Servis Rota Optimizasyon"""
 from config import Config
 from models.service_planner import ServicePlanner
 

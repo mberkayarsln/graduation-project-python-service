@@ -1,12 +1,9 @@
-"""TSP Optimizer (OR-Tools)"""
 import math
 from ortools.constraint_solver import routing_enums_pb2
 from ortools.constraint_solver import pywrapcp
 
 
 class TSPOptimizer:
-    """TSP çözücü"""
-    
     def __init__(self, office_location=None):
         self.office_location = office_location
         self.distance_matrix = None
@@ -14,8 +11,7 @@ class TSPOptimizer:
     
     @staticmethod
     def haversine(lat1, lon1, lat2, lon2):
-        """Haversine mesafe (metre)"""
-        r = 6371000  # Dünya yarıçapı (metre)
+        r = 6371000
         phi1, phi2 = math.radians(lat1), math.radians(lat2)
         dphi = math.radians(lat2 - lat1)
         dlambda = math.radians(lon2 - lon1)
@@ -27,7 +23,6 @@ class TSPOptimizer:
     
     def compute_distance_matrix(self, points, use_traffic=False, 
                                 api_key=None, departure_time=None, k_nearest=5):
-        """Mesafe matrisi oluştur"""
         n = len(points)
         matrix = [[0] * n for _ in range(n)]
         haversine_matrix = [[0.0] * n for _ in range(n)]
@@ -45,12 +40,10 @@ class TSPOptimizer:
             api_calls = 0
             total_possible = n * (n - 1) // 2
 
-            # Tüm i<j çiftleri için API çağrısı yap (matris tamamen API sürelerinden oluşacak)
             for i in range(n):
                 for j in range(i + 1, n):
                     try:
                         result = router.get_route_with_traffic([points[i], points[j]], departure_time)
-                        # TomTom döndürdüğü değer dakika cinsinden, burayı saniyeye çevir
                         duration_seconds = int(result['duration_with_traffic_min'] * 60)
                         matrix[i][j] = duration_seconds
                         matrix[j][i] = duration_seconds
@@ -76,7 +69,6 @@ class TSPOptimizer:
             api_calls = 0
             total_possible = n * (n - 1) // 2
             
-            # Tüm i<j çiftleri için OSRM çağrısı yap
             for i in range(n):
                 for j in range(i + 1, n):
                     try:
@@ -100,7 +92,6 @@ class TSPOptimizer:
     
     def optimize(self, points, use_traffic=False, api_key=None, 
                 departure_time=None, k_nearest=5):
-        """TSP optimizasyon: duraklar arası optimal + son ofis"""
         if not points:
             return [self.office_location] if self.office_location else []
         

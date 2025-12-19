@@ -1,4 +1,3 @@
-"""Routing Service"""
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
@@ -8,9 +7,7 @@ from modules.osrm_router import OSRMRouter
 from models.route import Route
 
 
-class RoutingService:
-    """Rota optimizasyon"""
-    
+class RoutingService:    
     def __init__(self, config):
         self.config = config
         self.strategy = 'tsp'
@@ -20,7 +17,6 @@ class RoutingService:
     
     def optimize_cluster_route(self, cluster, use_traffic=False, 
                               api_key=None, departure_time=None, use_stops=True):
-        """Cluster rotası optimize et"""
         if use_stops and cluster.has_stops():
             points_to_optimize = cluster.stops
             print(f"   Optimizing {len(points_to_optimize)} stops for cluster {cluster.id}")
@@ -57,7 +53,6 @@ class RoutingService:
         return route
     
     def optimize_all_clusters(self, clusters, use_traffic=False):
-        """Tüm cluster rotaları optimize et"""
         routes = []
         api_key = self.config.TOMTOM_API_KEY if use_traffic else None
         departure_time = self.config.get_departure_time() if use_traffic else None

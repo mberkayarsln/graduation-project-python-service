@@ -1,4 +1,3 @@
-"""Traffic Service"""
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
@@ -6,9 +5,7 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from modules.traffic_router import TrafficRouter
 
 
-class TrafficService:
-    """Trafik analizi"""
-    
+class TrafficService:    
     def __init__(self, config):
         self.config = config
         self.api_key = config.TOMTOM_API_KEY
@@ -19,7 +16,6 @@ class TrafficService:
             self.router = None
     
     def add_traffic_data_to_route(self, route, departure_time=None):
-        """Trafik verisi ekle"""
         if not self.enabled or not self.router:
             return False
         
@@ -33,7 +29,6 @@ class TrafficService:
                 departure_time=departure_time
             )
             
-            # Route objesine ekle
             route.set_traffic_data(traffic_info)
             
             return True
@@ -43,15 +38,6 @@ class TrafficService:
             return False
     
     def add_traffic_data_to_routes(self, routes):
-        """
-        Birden fazla rotaya trafik verisi ekle
-        
-        Args:
-            routes: Route listesi
-        
-        Returns:
-            int: Başarılı olan rota sayısı
-        """
         if not self.enabled:
             return 0
         
@@ -65,5 +51,4 @@ class TrafficService:
         return success_count
     
     def is_enabled(self):
-        """Trafik analizi aktif mi?"""
         return self.enabled

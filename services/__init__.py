@@ -1,6 +1,3 @@
-"""
-Services - Servis katmanı
-"""
 from .location_service import LocationService
 from .clustering_service import ClusteringService
 from .routing_service import RoutingService
