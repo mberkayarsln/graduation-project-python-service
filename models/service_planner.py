@@ -51,6 +51,11 @@ class ServicePlanner:
     
     def filter_employees_by_distance(self):
         max_distance = self.config.MAX_DISTANCE_FROM_CENTER
+        
+        if max_distance is None:
+            print("[3] Uzak çalışanlar filtreleniyor (DEVRE DIŞI)...")
+            return 0
+            
         total_excluded = 0
         
         print(f"[3] Uzak çalışanlar filtreleniyor (max: {max_distance/1000}km)...")

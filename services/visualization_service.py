@@ -82,13 +82,13 @@ class VisualizationService:
             icon=folium.Icon(color='red', icon='home', prefix='fa')
         ).add_to(m)
         
-        radius_km = self.config.MAX_DISTANCE_FROM_CENTER / 1000 
+        # radius_km = self.config.MAX_DISTANCE_FROM_CENTER / 1000 
         
         for cluster in clusters:
             color = self._get_cluster_color(cluster.id)
             folium.Circle(
                 location=cluster.center,
-                radius=self.config.MAX_DISTANCE_FROM_CENTER, 
+                # radius=self.config.MAX_DISTANCE_FROM_CENTER, 
                 color=color,
                 fill=True,
                 fillColor=color,
@@ -96,14 +96,12 @@ class VisualizationService:
                 weight=2,
                 opacity=0.5,
                 popup=f"<b>Cluster {cluster.id}</b><br>"
-                      f"Yarıçap: {radius_km:.1f} km"
             ).add_to(m)
             
             folium.Marker(
                 location=cluster.center,
                 popup=f"<b>Cluster {cluster.id}</b><br>"
-                      f"Merkez<br>"
-                      f"Kapsama: {radius_km:.1f} km",
+                      f"Merkez<br>",
                 icon=folium.Icon(color='black', icon='star', prefix='fa')
             ).add_to(m)
         
@@ -256,17 +254,16 @@ class VisualizationService:
             icon=folium.Icon(color='red', icon='home', prefix='fa')
         ).add_to(m)
         
-        radius_km = self.config.MAX_DISTANCE_FROM_CENTER / 1000
+        # radius_km = self.config.MAX_DISTANCE_FROM_CENTER / 1000
         folium.Circle(
             location=cluster.center,
-            radius=self.config.MAX_DISTANCE_FROM_CENTER,
+            # radius=self.config.MAX_DISTANCE_FROM_CENTER,
             color=color,
             fill=True,
             fillColor=color,
             fillOpacity=0.15,
             weight=2,
             opacity=0.6,
-            popup=f"Kapsama Alanı<br>{radius_km:.1f} km"
         ).add_to(m)
         
         folium.Marker(
