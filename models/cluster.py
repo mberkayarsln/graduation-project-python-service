@@ -1,8 +1,4 @@
-"""Cluster model"""
-
 class Cluster:
-    """Çalışan kümesi"""
-    
     def __init__(self, id, center):
         self.id = id
         self.center = center
@@ -14,18 +10,15 @@ class Cluster:
         self.stop_loads = []
     
     def add_employee(self, employee):
-        """Çalışan ekle"""
         self.employees.append(employee)
         employee.cluster_id = self.id
     
     def remove_employee(self, employee):
-        """Çalışan çıkar"""
         if employee in self.employees:
             self.employees.remove(employee)
             employee.cluster_id = None
     
     def filter_by_distance(self, max_distance):
-        """Uzak çalışanları filtrele (metre)"""
         excluded_count = 0
         center_lat, center_lon = self.center
         
@@ -38,32 +31,26 @@ class Cluster:
         return excluded_count
     
     def get_active_employees(self):
-        """Hariç tutulmayan çalışanları döndür"""
         return [emp for emp in self.employees if not emp.excluded]
     
     def get_employee_count(self, include_excluded=False):
-        """Çalışan sayısı"""
         if include_excluded:
             return len(self.employees)
         return len(self.get_active_employees())
     
     def get_employee_locations(self, include_excluded=False):
-        """Çalışan lokasyonları: [(lat, lon), ...]"""
         employees = self.employees if include_excluded else self.get_active_employees()
         return [emp.get_location() for emp in employees]
     
     def assign_route(self, route):
-        """Rota ata"""
         self.route = route
         route.cluster = self
     
     def assign_vehicle(self, vehicle):
-        """Araç ata"""
         self.vehicle = vehicle
         vehicle.cluster = self
     
     def set_stops(self, stops, assignments, stop_loads):
-        """Durak kaydet"""
         self.stops = stops
         self.stop_loads = stop_loads
         
@@ -76,7 +63,6 @@ class Cluster:
                 self.stop_assignments[employee.id] = assignments[i]
     
     def get_employee_stop(self, employee):
-        """Çalışanın durağı: (index, location)"""
         if employee.id in self.stop_assignments:
             stop_index = self.stop_assignments[employee.id]
             if stop_index < len(self.stops):
@@ -85,11 +71,9 @@ class Cluster:
         return None, None
     
     def has_stops(self):
-        """Durak var mı?"""
         return len(self.stops) > 0
     
     def get_stats(self):
-        """Cluster istatistikleri"""
         active = self.get_employee_count(include_excluded=False)
         total = self.get_employee_count(include_excluded=True)
         excluded = total - active

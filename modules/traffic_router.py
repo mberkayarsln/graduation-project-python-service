@@ -1,19 +1,15 @@
-"""Traffic Router"""
 import requests
 from datetime import datetime
 from modules.api_cache import APICache
 
 
-class TrafficRouter:
-    """TomTom trafik verisi"""
-    
+class TrafficRouter:    
     def __init__(self, api_key, cache_enabled=True):
         self.api_key = api_key
         self.cache = APICache(cache_file='data/tomtom_cache.json') if cache_enabled else None
         self.base_url = "https://api.tomtom.com/routing/1/calculateRoute"
     
     def get_route_with_traffic(self, points, departure_time=None):
-        """Trafikli rota al"""
         if departure_time is None:
             departure_time = datetime.now()
         if self.cache:
@@ -43,13 +39,11 @@ class TrafficRouter:
             route_data = data['routes'][0]
             summary = route_data['summary']
             
-            # Koordinatları topla
             route_coords = []
             for leg in route_data['legs']:
                 for point in leg['points']:
                     route_coords.append([point['latitude'], point['longitude']])
             
-            # Süre bilgileri
             dist_km = summary['lengthInMeters'] / 1000
             duration_no_traffic = summary.get('noTrafficTravelTimeInSeconds', 
                                              summary['travelTimeInSeconds']) / 60
@@ -66,7 +60,6 @@ class TrafficRouter:
                 'departure_time': departure_time
             }
             
-            # Cache'e kaydet
             if self.cache:
                 self.cache.set(points, departure_time, result)
             
@@ -80,6 +73,5 @@ class TrafficRouter:
             raise
     
     def clear_cache(self):
-        """Cache'i temizle"""
         if self.cache:
             self.cache.clear()

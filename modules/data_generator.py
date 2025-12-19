@@ -1,4 +1,3 @@
-"""Data Generator"""
 import numpy as np
 import pandas as pd
 from shapely.geometry import Point
@@ -7,8 +6,6 @@ from pyrosm import OSM
 
 
 class DataGenerator:
-    """Rastgele konum oluştur (OSM)"""
-    
     def __init__(self, osm_file="data/istanbul-center.osm.pbf"):
         self.osm_file = osm_file
         self._osm = None
@@ -16,7 +13,6 @@ class DataGenerator:
         self._bounds = None
     
     def _load_osm_data(self):
-        """OSM yükle"""
         if self._osm is None:
             self._osm = OSM(self.osm_file)
             
@@ -32,7 +28,6 @@ class DataGenerator:
             self._bounds = landuse.total_bounds
     
     def generate(self, n=100, seed=42):
-        """Rastgele konum oluştur"""
         self._load_osm_data()
         
         rng = np.random.default_rng(seed)
@@ -59,20 +54,8 @@ class DataGenerator:
         return df
     
     def generate_and_save_map(self, n=100, seed=42, output_file="maps/generated_points.html"):
-        """
-        Konum oluştur ve haritaya kaydet
-        
-        Args:
-            n: Nokta sayısı
-            seed: Random seed
-            output_file: Çıktı dosyası
-        
-        Returns:
-            tuple: (DataFrame, dosya_adı)
-        """
         df = self.generate(n, seed)
         
-        # Harita oluştur
         m = folium.Map(
             location=[df['lat'].mean(), df['lon'].mean()], 
             zoom_start=12

@@ -26,7 +26,6 @@ class APICache:
     
     def _generate_key(self, points, departure_time):
         coords_str = '_'.join([f"{lat:.6f},{lon:.6f}" for lat, lon in points])
-        # Trafik verisi için saat:dakika hassasiyeti (her 1 dakika farklı cache)
         time_str = departure_time.strftime('%Y-%m-%d-%H-%M') if departure_time else 'no-time'
         key_str = f"{coords_str}_{time_str}"
         

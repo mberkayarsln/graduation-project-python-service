@@ -1,4 +1,3 @@
-"""Stop Clusterer"""
 from sklearn.cluster import KMeans
 import numpy as np
 from pyrosm import OSM
@@ -6,16 +5,13 @@ from shapely.geometry import Point, LineString
 from shapely.ops import nearest_points
 
 
-class StopClusterer:
-    """Durak noktaları oluştur (sub-clustering)"""
-    
+class StopClusterer:    
     def __init__(self, osm_file="data/istanbul-center.osm.pbf", snap_to_roads=True):
         self.osm_file = osm_file
         self.snap_to_roads = snap_to_roads
         self._roads = None
     
     def _load_major_roads(self):
-        """Ana yolları yükle"""
         if self._roads is not None:
             return self._roads
         
@@ -34,7 +30,6 @@ class StopClusterer:
             return None
     
     def _snap_to_nearest_road(self, lat, lon, max_distance=200):
-        """En yakın yola snap"""
         if not self.snap_to_roads or self._roads is None:
             return (lat, lon)
         
@@ -53,41 +48,25 @@ class StopClusterer:
                     min_distance = distance
                     nearest_point = road_nearest
             
-            # Eğer çok uzaktaysa snap yapma
-            if nearest_point and min_distance < max_distance / 111320:  # metre → derece yaklaşık
-                return (nearest_point.y, nearest_point.x)  # lat, lon
+            if nearest_point and min_distance < max_distance / 111320:  
+                return (nearest_point.y, nearest_point.x)  
             
         except Exception as e:
             print(f"WARNING: Road snapping hatası: {e}")
         
-        return (lat, lon)  # Başarısız, orijinali dön
+        return (lat, lon)
     
     @staticmethod
     def calculate_optimal_stops(n_employees, employees_per_stop, min_stops, max_stops):
-        """
-        Cluster boyutuna göre optimal durak sayısını hesapla
-        
-        Args:
-            n_employees: Çalışan sayısı
-            employees_per_stop: Durak başına ideal çalışan sayısı
-            min_stops: Minimum durak sayısı
-            max_stops: Maximum durak sayısı
-        
-        Returns:
-            int: Durak sayısı
-        """
         if n_employees == 0:
             return 0
         
-        # Her X çalışana 1 durak
         calculated = n_employees // employees_per_stop
         
-        # Min-max aralığında tut
         return max(min_stops, min(calculated, max_stops))
     
     def generate_stops(self, employees, n_stops=None, employees_per_stop=None, 
                       min_stops=2, max_stops=15):
-        """Durakları oluştur (sub-clustering)"""
         if not employees or len(employees) == 0:
             return {
                 'stops': [],
@@ -112,7 +91,6 @@ class StopClusterer:
                 'stop_loads': [1]
             }
         
-        # Çalışan sayısı durak sayısından azsa
         if len(employees) <= n_stops:
             stops = [(emp.lat, emp.lon) for emp in employees]
             assignments = list(range(len(employees)))
@@ -123,7 +101,6 @@ class StopClusterer:
                 'stop_loads': stop_loads
             }
         
-        # K-means ile sub-clustering
         coordinates = np.array([[emp.lat, emp.lon] for emp in employees])
         
         kmeans = KMeans(
@@ -135,11 +112,9 @@ class StopClusterer:
         labels = kmeans.fit_predict(coordinates)
         centers = kmeans.cluster_centers_
         
-        # Ana yolları yükle (snap aktifse)
         if self.snap_to_roads:
             self._load_major_roads()
         
-        # Durak koordinatları (ana yollara snap et)
         stops = []
         snapped_count = 0
         
@@ -155,10 +130,8 @@ class StopClusterer:
         if self.snap_to_roads and snapped_count > 0:
             print(f"      → {snapped_count}/{n_stops} durak ana yola yerleştirildi")
         
-        # Her çalışanın durak ataması
         assignments = labels.tolist()
         
-        # Her duraktaki yük (çalışan sayısı)
         stop_loads = [0] * n_stops
         for label in labels:
             stop_loads[label] += 1
@@ -170,15 +143,6 @@ class StopClusterer:
         }
     
     def get_stats(self, result):
-        """
-        Durak istatistikleri
-        
-        Args:
-            result: generate_stops() çıktısı
-        
-        Returns:
-            dict: İstatistikler
-        """
         if not result['stops']:
             return {
                 'n_stops': 0,

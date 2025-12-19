@@ -1,4 +1,3 @@
-"""Traffic Service"""
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
@@ -6,9 +5,7 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from modules.traffic_router import TrafficRouter
 
 
-class TrafficService:
-    """Trafik analizi"""
-    
+class TrafficService:    
     def __init__(self, config):
         self.config = config
         self.api_key = config.TOMTOM_API_KEY
@@ -18,8 +15,15 @@ class TrafficService:
         else:
             self.router = None
     
+    @staticmethod
+    def get_departure_time():
+        from datetime import datetime, timedelta
+        tomorrow_8am = datetime.now().replace(hour=8, minute=0, second=0, microsecond=0)
+        if datetime.now().hour >= 8:
+            tomorrow_8am += timedelta(days=1)
+        return tomorrow_8am
+    
     def add_traffic_data_to_route(self, route, departure_time=None):
-        """Trafik verisi ekle"""
         if not self.enabled or not self.router:
             return False
         
@@ -27,13 +31,12 @@ class TrafficService:
             return False
         
         try:
-            departure_time = departure_time or self.config.get_departure_time()
+            departure_time = departure_time or self.get_departure_time()
             traffic_info = self.router.get_route_with_traffic(
                 points=route.stops,
                 departure_time=departure_time
             )
             
-            # Route objesine ekle
             route.set_traffic_data(traffic_info)
             
             return True
@@ -43,19 +46,10 @@ class TrafficService:
             return False
     
     def add_traffic_data_to_routes(self, routes):
-        """
-        Birden fazla rotaya trafik verisi ekle
-        
-        Args:
-            routes: Route listesi
-        
-        Returns:
-            int: Başarılı olan rota sayısı
-        """
         if not self.enabled:
             return 0
         
-        departure_time = self.config.get_departure_time()
+        departure_time = self.get_departure_time()
         success_count = 0
         
         for route in routes:
@@ -65,5 +59,4 @@ class TrafficService:
         return success_count
     
     def is_enabled(self):
-        """Trafik analizi aktif mi?"""
         return self.enabled
