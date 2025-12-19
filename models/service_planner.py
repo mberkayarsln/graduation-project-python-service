@@ -111,11 +111,11 @@ class ServicePlanner:
         use_traffic = use_traffic if use_traffic is not None else self.config.USE_TRAFFIC
         
         mode = "duraklar" if use_stops else "çalışan konumları"
-        print(f"[5] Rotalar optimize ediliyor ({mode}, trafik: {'ON' if use_traffic else 'OFF'})...")
+        print(f"[5] Rotalar oluşturuluyor ({mode}, trafik: {'ON' if use_traffic else 'OFF'})...")
         
         routes = []
         api_key = self.config.TOMTOM_API_KEY if use_traffic else None
-        departure_time = self.config.get_departure_time() if use_traffic else None
+        departure_time = self.traffic_service.get_departure_time() if use_traffic else None
         
         for cluster in self.clusters:
             route = self.routing_service.optimize_cluster_route(
@@ -158,7 +158,7 @@ class ServicePlanner:
                 vehicle_type="Minibüs"
             )
             vehicle.assign_cluster(cluster)
-            vehicle.set_departure_time(self.config.get_departure_time())
+            vehicle.set_departure_time(self.traffic_service.get_departure_time())
             cluster.assign_vehicle(vehicle)
             self.vehicles.append(vehicle)
         

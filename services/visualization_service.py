@@ -9,6 +9,27 @@ class VisualizationService:
     def __init__(self, config):
         self.config = config
         self.office_location = config.OFFICE_LOCATION
+        self.cluster_colors = {}
+    
+    def _get_cluster_color(self, cluster_id):
+        if cluster_id not in self.cluster_colors:
+            import random
+            import hashlib
+            
+            seed_str = f"cluster_{cluster_id}_color_seed"
+            hash_value = int(hashlib.md5(seed_str.encode()).hexdigest(), 16)
+            random.seed(hash_value)
+            
+            golden_ratio = 0.618033988749895
+            hue = int((cluster_id * golden_ratio * 360) % 360)
+            
+            hue = (hue + random.randint(-30, 30)) % 360
+            
+            saturation = random.randint(65, 95)
+            lightness = random.randint(40, 70)
+            
+            self.cluster_colors[cluster_id] = f'hsl({hue}, {saturation}%, {lightness}%)'
+        return self.cluster_colors[cluster_id]
     
     def create_employees_map(self, employees):
         filename = "maps/employees.html"
@@ -55,8 +76,6 @@ class VisualizationService:
         
         m = folium.Map(location=[avg_lat, avg_lon], zoom_start=12)
         
-        colors = self.config.CLUSTER_COLORS
-        
         folium.Marker(
             location=self.office_location,
             popup="<b>Ofis</b>",
@@ -66,7 +85,7 @@ class VisualizationService:
         radius_km = self.config.MAX_DISTANCE_FROM_CENTER / 1000 
         
         for cluster in clusters:
-            color = colors[cluster.id % len(colors)]
+            color = self._get_cluster_color(cluster.id)
             folium.Circle(
                 location=cluster.center,
                 radius=self.config.MAX_DISTANCE_FROM_CENTER, 
@@ -90,7 +109,7 @@ class VisualizationService:
         
         for emp in all_employees:
             cluster_id = emp.cluster_id
-            color = colors[cluster_id % len(colors)]
+            color = self._get_cluster_color(cluster_id)
             
             folium.CircleMarker(
                 location=[emp.lat, emp.lon],
@@ -117,8 +136,6 @@ class VisualizationService:
         
         m = folium.Map(location=self.office_location, zoom_start=11)
         
-        colors = self.config.CLUSTER_COLORS
-        
         folium.Marker(
             location=self.office_location,
             popup="<b>Ofis</b>",
@@ -127,7 +144,7 @@ class VisualizationService:
         
         for cluster_id, route in routes_dict.items():
             cluster = clusters[int(cluster_id)]
-            color = colors[int(cluster_id) % len(colors)]
+            color = self._get_cluster_color(int(cluster_id))
             
             if route.coordinates:
                 folium.PolyLine(
@@ -231,7 +248,7 @@ class VisualizationService:
         filename = f"maps/detailed/cluster_{cluster.id}_detail.html"
         m = folium.Map(location=cluster.center, zoom_start=14)
         
-        color = self.config.CLUSTER_COLORS[cluster.id % len(self.config.CLUSTER_COLORS)]
+        color = self._get_cluster_color(cluster.id)
         
         folium.Marker(
             location=self.office_location,

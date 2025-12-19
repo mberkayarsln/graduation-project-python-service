@@ -15,6 +15,14 @@ class TrafficService:
         else:
             self.router = None
     
+    @staticmethod
+    def get_departure_time():
+        from datetime import datetime, timedelta
+        tomorrow_8am = datetime.now().replace(hour=8, minute=0, second=0, microsecond=0)
+        if datetime.now().hour >= 8:
+            tomorrow_8am += timedelta(days=1)
+        return tomorrow_8am
+    
     def add_traffic_data_to_route(self, route, departure_time=None):
         if not self.enabled or not self.router:
             return False
@@ -23,7 +31,7 @@ class TrafficService:
             return False
         
         try:
-            departure_time = departure_time or self.config.get_departure_time()
+            departure_time = departure_time or self.get_departure_time()
             traffic_info = self.router.get_route_with_traffic(
                 points=route.stops,
                 departure_time=departure_time
@@ -41,7 +49,7 @@ class TrafficService:
         if not self.enabled:
             return 0
         
-        departure_time = self.config.get_departure_time()
+        departure_time = self.get_departure_time()
         success_count = 0
         
         for route in routes:
