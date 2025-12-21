@@ -114,6 +114,30 @@ class Route:
                         valid_route_stops.append(s)
             
             if valid_route_stops:
+                filtered_stops = []
+                for s in valid_route_stops:
+                    s_point = Point(s[0], s[1])
+                    dist = line.project(s_point)
+                    
+                    delta = 1e-5
+                    p1 = line.interpolate(max(0, dist - delta))
+                    p2 = line.interpolate(min(line.length, dist + delta))
+                    
+                    vx = p2.x - p1.x
+                    vy = p2.y - p1.y
+                    wx = s_point.x - p1.x
+                    wy = s_point.y - p1.y
+                    
+                    cross_product = vx * wy - vy * wx
+                    
+                    if cross_product >= -1e-10:
+                        filtered_stops.append(s)
+                    else:
+                        pass
+                
+                valid_route_stops = filtered_stops
+            
+            if valid_route_stops:
                 active_employees = [e for e in employees if not e.excluded]
                 
                 if not active_employees:
