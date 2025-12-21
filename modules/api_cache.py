@@ -63,3 +63,20 @@ class APICache:
         self.cache = {}
         self._save_cache()
         print("cache cleared!")
+
+    def _generate_matrix_key(self, origins, destinations, profile):
+        origins_str = '_'.join([f"{lat:.6f},{lon:.6f}" for lat, lon in origins])
+        dests_str = '_'.join([f"{lat:.6f},{lon:.6f}" for lat, lon in destinations])
+        key_str = f"matrix_{profile}_{origins_str}_{dests_str}"
+        return hashlib.md5(key_str.encode()).hexdigest()
+
+    def get_matrix(self, origins, destinations, profile):
+        key = self._generate_matrix_key(origins, destinations, profile)
+        if key in self.cache:
+            return self.cache[key]
+        return None
+
+    def set_matrix(self, origins, destinations, profile, data):
+        key = self._generate_matrix_key(origins, destinations, profile)
+        self.cache[key] = data
+        self._save_cache()

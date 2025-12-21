@@ -53,3 +53,42 @@ class OSRMRouter:
         except KeyError as e:
             print(f"Unexpected OSRM response format: {e}")
             raise
+            
+    def get_distance_matrix(self, origins, destinations, profile='foot'):
+        if self.cache:
+            cached_result = self.cache.get_matrix(origins, destinations, profile)
+            if cached_result is not None:
+                return cached_result
+        
+        all_points = origins + destinations
+        coords = ';'.join([f"{lon},{lat}" for lat, lon in all_points])
+        
+        url = f"{self.base_url}/table/v1/{profile}/{coords}"
+        
+        source_indices = ';'.join(map(str, range(len(origins))))
+        dest_indices = ';'.join(map(str, range(len(origins), len(all_points))))
+        
+        params = {
+            'sources': source_indices,
+            'destinations': dest_indices,
+            'annotations': 'distance' 
+        }
+        
+        try:
+            response = requests.get(url, params=params, timeout=15)
+            response.raise_for_status()
+            data = response.json()
+            
+            if 'code' in data and data['code'] != 'Ok':
+                raise Exception(f"OSRM Error: {data.get('message', 'Unknown error')}")
+            
+            result = data['distances']
+            
+            if self.cache:
+                self.cache.set_matrix(origins, destinations, profile, result)
+                
+            return result
+            
+        except Exception as e:
+            print(f"OSRM Matrix API error: {e}")
+            return None

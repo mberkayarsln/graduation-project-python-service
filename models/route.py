@@ -105,7 +105,6 @@ class Route:
             line = LineString(self.coordinates)
             matched_count = 0
             
-            
             valid_route_stops = [s for s in self.stops] if self.stops else []
             
             if safe_stops and len(safe_stops) > 0:
@@ -113,6 +112,42 @@ class Route:
                     s_point = Point(s[0], s[1])
                     if line.distance(s_point) < 0.00015:
                         valid_route_stops.append(s)
+            
+            if valid_route_stops:
+                active_employees = [e for e in employees if not e.excluded]
+                
+                if not active_employees:
+                    return 0
+                    
+                from modules.osrm_router import OSRMRouter
+                router = OSRMRouter()
+                
+                emp_locs = [(e.lat, e.lon) for e in active_employees]
+                
+                distances_matrix = router.get_distance_matrix(emp_locs, valid_route_stops, profile='foot')
+                
+                if distances_matrix:
+                    for i, employee in enumerate(active_employees):
+                        dists = distances_matrix[i]
+                        
+                        min_dist_meters = float('inf')
+                        best_stop_idx = -1
+                        
+                        for stop_idx, dist in enumerate(dists):
+                            if dist is not None and dist < min_dist_meters:
+                                min_dist_meters = dist
+                                best_stop_idx = stop_idx
+                        
+                        if best_stop_idx != -1:
+                            best_stop = valid_route_stops[best_stop_idx]
+                            employee.set_pickup_point(best_stop[0], best_stop[1], type="stop")
+                            matched_count += 1
+                        else:
+                            pass
+                    
+                    return matched_count
+            
+            print("Using geometric fallback for route matching...")
             
             valid_stops_multipoint = None
             if valid_route_stops:
