@@ -166,12 +166,12 @@ class VisualizationService:
                     stop_tuple = (stop_lat, stop_lon)
                     display_number = stop_order_map.get(stop_tuple, i+1)
                     
-                    folium.Marker(
+                    """ folium.Marker(
                         location=[stop_lat, stop_lon],
                         popup=f"<b>Durak {display_number}</b><br>"
                               f"Cluster {cluster_id}<br>"
                               f"{load} çalışan",
-                        icon=folium.DivIcon(html=f"""
+                        icon=folium.DivIcon(html=f'''
                             <div style="background: {color}; color: white; 
                                  padding: 3px 8px; border-radius: 5px; 
                                  font-weight: bold; font-size: 14px;
@@ -179,8 +179,8 @@ class VisualizationService:
                                  box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
                                 {display_number}
                             </div>
-                        """)
-                    ).add_to(m)
+                        ''')
+                    ).add_to(m) """
                 
                 for employee in cluster.get_active_employees():
                     stop_index, stop_location = cluster.get_employee_stop(employee)
@@ -277,12 +277,12 @@ class VisualizationService:
                 stop_tuple = (stop_lat, stop_lon)
                 display_number = stop_order_map.get(stop_tuple, i+1)
                 
-                folium.Marker(
+                """ folium.Marker(
                     location=[stop_lat, stop_lon],
                     popup=f"<b>Durak {display_number}</b><br>"
                           f"{load} çalışan<br>"
                           f"Cluster {cluster.id}",
-                    icon=folium.DivIcon(html=f"""
+                    icon=folium.DivIcon(html=f'''
                         <div style="background: {color}; color: white; 
                              padding: 5px 10px; border-radius: 8px; 
                              font-weight: bold; font-size: 16px;
@@ -290,8 +290,8 @@ class VisualizationService:
                              box-shadow: 0 2px 8px rgba(0,0,0,0.4);">
                             {display_number}
                         </div>
-                    """)
-                ).add_to(m)
+                    ''')
+                ).add_to(m) """
         
         for employee in cluster.employees:
             if employee.excluded:
