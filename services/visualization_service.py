@@ -357,7 +357,11 @@ class VisualizationService:
                 if is_safe_stop:
                     folium.Marker(
                         location=target_location,
-                        icon=folium.Icon(color='green', icon='bus', prefix='fa', icon_size=(24,24)),
+                        icon=folium.DivIcon(
+                            html='<div style="font-size: 20px; color: green; text-shadow: 1px 1px 2px white;"><i class="fa fa-bus"></i></div>',
+                            icon_size=(20, 20),
+                            icon_anchor=(10, 10)
+                        ),
                         popup="Taşıt Durağı (Güvenli Nokta)"
                     ).add_to(m)
         
