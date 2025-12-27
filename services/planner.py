@@ -1,76 +1,80 @@
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-
-from services.location_service import LocationService
-from services.clustering_service import ClusteringService
-from services.routing_service import RoutingService
-from services.traffic_service import TrafficService
-from services.visualization_service import VisualizationService
-from models.vehicle import Vehicle
+"""Service Planner - main orchestrator for route optimization."""
+from services.location import LocationService
+from services.clustering import ClusteringService
+from services.routing import RoutingService
+from services.traffic import TrafficService
+from services.visualization import VisualizationService
+from core.vehicle import Vehicle
 
 
-class ServicePlanner:    
+class ServicePlanner:
+    """Main orchestrator that coordinates all services for route planning."""
+    
     def __init__(self, config):
         self.config = config
         
+        # Data containers
         self.employees = []
         self.clusters = []
         self.vehicles = []
         
+        # Services
         self.location_service = LocationService(config)
         self.clustering_service = ClusteringService(config)
         self.routing_service = RoutingService(config)
         self.traffic_service = TrafficService(config)
-        self.routing_service = RoutingService(config)
-        self.traffic_service = TrafficService(config)
         self.visualization_service = VisualizationService(config)
         
+        # State
         self.stats = {}
         self.safe_stops = []
     
     def generate_employees(self, count=None, seed=None):
+        """Generate employee locations."""
         count = count or self.config.NUM_EMPLOYEES
         seed = seed if seed is not None else 42
         
-        print(f"[1] {count} çalışan konumu oluşturuluyor...")
+        print(f"[1] Generating {count} employee locations...")
         self.employees = self.location_service.generate_employees(count, seed)
-        print(f"    OK: {len(self.employees)} çalışan oluşturuldu")
+        print(f"    OK: {len(self.employees)} employees generated")
         
         return self.employees
     
     def create_clusters(self, num_clusters=None):
+        """Cluster employees into groups."""
         num_clusters = num_clusters or self.config.NUM_CLUSTERS
         
-        print(f"[2] {num_clusters} cluster oluşturuluyor...")
+        print(f"[2] Creating {num_clusters} clusters...")
         self.clusters = self.clustering_service.cluster_employees(
             self.employees,
             num_clusters,
             random_state=42
         )
-        print(f"    OK: {len(self.clusters)} cluster oluşturuldu")
+        print(f"    OK: {len(self.clusters)} clusters created")
         
         return self.clusters
     
     def filter_employees_by_distance(self):
+        """Filter out employees too far from cluster centers."""
         max_distance = self.config.MAX_DISTANCE_FROM_CENTER
         
         if max_distance is None:
-            print("[3] Uzak çalışanlar filtreleniyor (DEVRE DIŞI)...")
+            print("[3] Filtering distant employees (DISABLED)...")
             return 0
             
         total_excluded = 0
         
-        print(f"[3] Uzak çalışanlar filtreleniyor (max: {max_distance/1000}km)...")
+        print(f"[3] Filtering distant employees (max: {max_distance/1000}km)...")
         for cluster in self.clusters:
             excluded = cluster.filter_by_distance(max_distance)
             total_excluded += excluded
         
-        print(f"    OK: {total_excluded} çalışan hariç tutuldu")
+        print(f"    OK: {total_excluded} employees excluded")
         
         return total_excluded
     
     def generate_stops(self):
+        """Generate pickup stops for each cluster."""
         print(f"[4] Finding farthest employees from office in each cluster...")
         
         office_lat, office_lon = self.config.OFFICE_LOCATION
@@ -82,6 +86,7 @@ class ServicePlanner:
             if len(active_employees) == 0:
                 continue
             
+            # Find farthest employee from office
             max_distance = 0
             farthest_employee = None
             
@@ -111,15 +116,14 @@ class ServicePlanner:
         
         print(f"    OK: {total_routes} direct routes created")
         
-        return {
-            'total_routes': total_routes
-        }
+        return {'total_routes': total_routes}
     
     def optimize_routes(self, use_traffic=None, use_stops=True):
+        """Optimize routes for all clusters."""
         use_traffic = use_traffic if use_traffic is not None else self.config.USE_TRAFFIC
         
-        mode = "duraklar" if use_stops else "çalışan konumları"
-        print(f"[5] Rotalar oluşturuluyor ({mode}, trafik: {'ON' if use_traffic else 'OFF'})...")
+        mode = "stops" if use_stops else "employee locations"
+        print(f"[5] Creating routes ({mode}, traffic: {'ON' if use_traffic else 'OFF'})...")
         
         routes = []
         api_key = self.config.TOMTOM_API_KEY if use_traffic else None
@@ -136,7 +140,7 @@ class ServicePlanner:
             if route:
                 routes.append(route)
         
-        
+        # Match employees to routes
         for i, cluster in enumerate(self.clusters):
             if cluster.route:
                 print(f"   Matching employees to route for cluster {cluster.id}...")
@@ -150,53 +154,55 @@ class ServicePlanner:
                 else:
                     n_stops = len(cluster.route.stops) - 1 if len(cluster.route.stops) > 0 else 0
                 
-                print(f"   Cluster {cluster.id}: {active} çalışan → {n_stops} durak")
+                print(f"   Cluster {cluster.id}: {active} employees → {n_stops} stops")
         
-        print(f"    OK: {len(routes)} rota oluşturuldu")
+        print(f"    OK: {len(routes)} routes created")
         
+        # Add traffic data if enabled
         if use_traffic and self.traffic_service.is_enabled():
-            print(f"Trafik verileri ekleniyor...")
+            print(f"Adding traffic data...")
             success = self.traffic_service.add_traffic_data_to_routes(routes)
-            print(f"    OK: {success}/{len(routes)} rotaya trafik verisi eklendi")
+            print(f"    OK: {success}/{len(routes)} routes with traffic data")
         
         return routes
     
     def assign_vehicles(self):
-        print(f"Araçlar atanıyor...")
+        """Assign vehicles to clusters."""
+        print(f"Assigning vehicles...")
         
         self.vehicles = []
         for i, cluster in enumerate(self.clusters):
             vehicle = Vehicle(
                 id=i + 1,
                 capacity=50,
-                vehicle_type="Minibüs"
+                vehicle_type="Minibus"
             )
             vehicle.assign_cluster(cluster)
             vehicle.set_departure_time(self.traffic_service.get_departure_time())
             cluster.assign_vehicle(vehicle)
             self.vehicles.append(vehicle)
         
-        print(f"    OK: {len(self.vehicles)} araç atandı")
+        print(f"    OK: {len(self.vehicles)} vehicles assigned")
         
         return self.vehicles
     
     def generate_maps(self):
-        print(f"[6] Haritalar oluşturuluyor...")
+        """Generate HTML map visualizations."""
+        print(f"[6] Generating maps...")
         
         files = self.visualization_service.create_all_maps(self.clusters)
         
-        
-        print(f"    OK: {files[0]} (çalışanlar)")
-        print(f"    OK: {files[1]} (cluster'lar)")
-        print(f"    OK: {files[2]} (rotalar)")
-        
+        print(f"    OK: {files[0]} (employees)")
+        print(f"    OK: {files[1]} (clusters)")
+        print(f"    OK: {files[2]} (routes)")
         
         if len(files) > 3:
-            print(f"    OK: {len(files) - 3} detaylı cluster haritası oluşturuldu")
+            print(f"    OK: {len(files) - 3} detailed cluster maps created")
         
         return files
     
     def calculate_statistics(self):
+        """Calculate summary statistics."""
         total_employees = len(self.employees)
         excluded_employees = sum(1 for emp in self.employees if emp.excluded)
         active_employees = total_employees - excluded_employees
@@ -227,31 +233,33 @@ class ServicePlanner:
         return self.stats
     
     def print_summary(self):
+        """Print execution summary."""
         stats = self.calculate_statistics()
         
         print("\n" + "=" * 50)
-        print("                    ÖZET")
+        print("                    SUMMARY")
         print("=" * 50)
-        print(f"✓ Toplam Çalışan: {stats['total_employees']}")
-        print(f"✓ Aktif Çalışan: {stats['active_employees']}")
-        print(f"✓ Hariç Tutulan: {stats['excluded_employees']}")
-        print(f"✓ Cluster Sayısı: {stats['num_clusters']}")
-        print(f"✓ Araç Sayısı: {stats['num_vehicles']}")
-        print(f"✓ Toplam Mesafe: {stats['total_distance_km']} km")
-        print(f"✓ Toplam Süre: {stats['total_duration_min']:.0f} dakika")
+        print(f"✓ Total Employees: {stats['total_employees']}")
+        print(f"✓ Active Employees: {stats['active_employees']}")
+        print(f"✓ Excluded: {stats['excluded_employees']}")
+        print(f"✓ Clusters: {stats['num_clusters']}")
+        print(f"✓ Vehicles: {stats['num_vehicles']}")
+        print(f"✓ Total Distance: {stats['total_distance_km']} km")
+        print(f"✓ Total Duration: {stats['total_duration_min']:.0f} minutes")
         
         if stats['use_traffic'] and stats['total_traffic_delay_min'] > 0:
-            print(f"⚠ Trafik Gecikmesi: +{stats['total_traffic_delay_min']:.0f} dakika")
+            print(f"⚠ Traffic Delay: +{stats['total_traffic_delay_min']:.0f} minutes")
         
-        print(f"✓ Trafik Analizi: {'Aktif' if stats['use_traffic'] else 'Pasif'}")
+        print(f"✓ Traffic Analysis: {'Active' if stats['use_traffic'] else 'Disabled'}")
         print("=" * 50 + "\n")
     
     def run(self):
+        """Execute the full route optimization pipeline."""
         print("\n" + "=" * 50)
-        print("        SERVİS ROTA OPTİMİZASYONU (OOP)")
+        print("        SERVICE ROUTE OPTIMIZATION")
         print("=" * 50)
         print(f"   Config: {self.config.NUM_EMPLOYEES} employees, {self.config.NUM_CLUSTERS} clusters")
-        print(f"Trafik Analizi: {'✓ Aktif' if self.config.USE_TRAFFIC else '✗ Pasif'}")
+        print(f"Traffic Analysis: {'✓ Active' if self.config.USE_TRAFFIC else '✗ Disabled'}")
         print("=" * 50 + "\n")
         
         print("[0] Loading Safe Pickup Points (Bus/Metro Stops)...")
@@ -259,17 +267,10 @@ class ServicePlanner:
         print(f"    OK: {len(self.safe_stops)} safe stops loaded from OSM")
         
         self.generate_employees()
-        
         self.create_clusters()
-        
         self.filter_employees_by_distance()
-        
         self.generate_stops()
-        
         self.optimize_routes(use_stops=True)
-        
         self.assign_vehicles()
-        
         self.generate_maps()
-        
         self.print_summary()

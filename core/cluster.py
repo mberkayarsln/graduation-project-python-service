@@ -1,4 +1,9 @@
+"""Cluster model - represents a group of employees assigned to a single route."""
+
+
 class Cluster:
+    """A cluster of employees that share a common pickup route."""
+    
     def __init__(self, id, center):
         self.id = id
         self.center = center
@@ -10,51 +15,59 @@ class Cluster:
         self.stop_loads = []
     
     def add_employee(self, employee):
+        """Add an employee to this cluster."""
         self.employees.append(employee)
         employee.cluster_id = self.id
     
     def remove_employee(self, employee):
+        """Remove an employee from this cluster."""
         if employee in self.employees:
             self.employees.remove(employee)
             employee.cluster_id = None
     
     def filter_by_distance(self, max_distance):
+        """Exclude employees who are too far from the cluster center."""
         excluded_count = 0
         center_lat, center_lon = self.center
         
         for employee in self.employees:
             distance = employee.distance_to(center_lat, center_lon)
             if distance > max_distance:
-                employee.exclude(f"Merkeze uzak ({distance:.0f}m)")
+                employee.exclude(f"Too far from center ({distance:.0f}m)")
                 excluded_count += 1
         
         return excluded_count
     
     def get_active_employees(self):
+        """Return list of non-excluded employees."""
         return [emp for emp in self.employees if not emp.excluded]
     
     def get_employee_count(self, include_excluded=False):
+        """Return count of employees in this cluster."""
         if include_excluded:
             return len(self.employees)
         return len(self.get_active_employees())
     
     def get_employee_locations(self, include_excluded=False):
+        """Return list of (lat, lon) tuples for employees."""
         employees = self.employees if include_excluded else self.get_active_employees()
         return [emp.get_location() for emp in employees]
     
     def assign_route(self, route):
+        """Assign a route to this cluster."""
         self.route = route
         route.cluster = self
     
     def assign_vehicle(self, vehicle):
+        """Assign a vehicle to this cluster."""
         self.vehicle = vehicle
         vehicle.cluster = self
     
     def set_stops(self, stops, assignments, stop_loads):
+        """Set the stops for this cluster with employee assignments."""
         self.stops = stops
         self.stop_loads = stop_loads
         
-
         self.stop_assignments = {}
         active_employees = self.get_active_employees()
         
@@ -63,17 +76,19 @@ class Cluster:
                 self.stop_assignments[employee.id] = assignments[i]
     
     def get_employee_stop(self, employee):
+        """Get the stop assignment for an employee."""
         if employee.id in self.stop_assignments:
             stop_index = self.stop_assignments[employee.id]
             if stop_index < len(self.stops):
                 return stop_index, self.stops[stop_index]
-        
         return None, None
     
     def has_stops(self):
+        """Check if this cluster has defined stops."""
         return len(self.stops) > 0
     
     def get_stats(self):
+        """Return statistics about this cluster."""
         active = self.get_employee_count(include_excluded=False)
         total = self.get_employee_count(include_excluded=True)
         excluded = total - active
@@ -106,4 +121,4 @@ class Cluster:
     def __str__(self):
         active = self.get_employee_count(include_excluded=False)
         total = self.get_employee_count(include_excluded=True)
-        return f"Cluster {self.id}: {active}/{total} çalışan"
+        return f"Cluster {self.id}: {active}/{total} employees"

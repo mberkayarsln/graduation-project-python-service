@@ -1,3 +1,4 @@
+"""Data Generator - generates synthetic employee locations from OSM data."""
 import numpy as np
 import pandas as pd
 from shapely.geometry import Point
@@ -6,6 +7,8 @@ from pyrosm import OSM
 
 
 class DataGenerator:
+    """Generates employee locations within urban residential areas."""
+    
     def __init__(self, osm_file="data/istanbul-center.osm.pbf"):
         self.osm_file = osm_file
         self._osm = None
@@ -13,6 +16,7 @@ class DataGenerator:
         self._bounds = None
     
     def _load_osm_data(self):
+        """Load and cache OSM data."""
         if self._osm is None:
             self._osm = OSM(self.osm_file)
             
@@ -25,10 +29,10 @@ class DataGenerator:
             )
             
             self._urban_area = landuse.unary_union
-            self._urban_area = landuse.unary_union
             self._bounds = landuse.total_bounds
             
     def get_transit_stops(self):
+        """Get bus and metro stops from OSM data."""
         self._load_osm_data()
         
         custom_filter = {
@@ -57,6 +61,16 @@ class DataGenerator:
         return stops_list
     
     def generate(self, n=100, seed=42):
+        """
+        Generate n random employee locations within residential areas.
+        
+        Args:
+            n: Number of employees to generate
+            seed: Random seed for reproducibility
+        
+        Returns:
+            DataFrame with id, lat, lon columns
+        """
         self._load_osm_data()
         
         rng = np.random.default_rng(seed)
@@ -83,6 +97,7 @@ class DataGenerator:
         return df
     
     def generate_and_save_map(self, n=100, seed=42, output_file="maps/generated_points.html"):
+        """Generate employees and save visualization map."""
         df = self.generate(n, seed)
         
         m = folium.Map(

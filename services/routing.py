@@ -1,12 +1,11 @@
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-
-from modules.osrm_router import OSRMRouter
-from models.route import Route
+"""Routing Service - handles route optimization for clusters."""
+from routing_engines.osrm import OSRMRouter
+from core.route import Route
 
 
-class RoutingService:    
+class RoutingService:
+    """Service for optimizing vehicle routes."""
+    
     def __init__(self, config):
         self.config = config
         self.office_location = config.OFFICE_LOCATION
@@ -14,6 +13,19 @@ class RoutingService:
     
     def optimize_cluster_route(self, cluster, use_traffic=False, 
                               api_key=None, departure_time=None, use_stops=True):
+        """
+        Optimize route for a single cluster.
+        
+        Args:
+            cluster: Cluster object to route
+            use_traffic: Whether to use traffic-aware routing
+            api_key: TomTom API key (if use_traffic=True)
+            departure_time: Departure time for traffic estimation
+            use_stops: Whether to use predetermined stops
+        
+        Returns:
+            Route object or None if no route possible
+        """
         if use_stops and cluster.has_stops():
             route_stops = cluster.stops
             print(f"   Using {len(route_stops)} predetermined stops for cluster {cluster.id}")
@@ -45,9 +57,11 @@ class RoutingService:
         return route
     
     def optimize_all_clusters(self, clusters, use_traffic=False):
+        """Optimize routes for all clusters."""
         routes = []
         api_key = self.config.TOMTOM_API_KEY if use_traffic else None
         
+        from services.traffic import TrafficService
         departure_time = TrafficService.get_departure_time() if use_traffic else None
         
         for cluster in clusters:

@@ -1,21 +1,36 @@
+"""TomTom Router - TomTom Routing API integration with traffic data."""
 import requests
 from datetime import datetime
-from modules.api_cache import APICache
+from routing_engines.cache import APICache
 
 
-class TrafficRouter:    
+class TrafficRouter:
+    """Client for TomTom Routing API with real-time traffic."""
+    
     def __init__(self, api_key, cache_enabled=True):
         self.api_key = api_key
         self.cache = APICache(cache_file='data/tomtom_cache.json') if cache_enabled else None
         self.base_url = "https://api.tomtom.com/routing/1/calculateRoute"
     
     def get_route_with_traffic(self, points, departure_time=None):
+        """
+        Get route with traffic-aware duration.
+        
+        Args:
+            points: List of (lat, lon) tuples
+            departure_time: Departure datetime (defaults to now)
+        
+        Returns:
+            Dict with coordinates, distance, and traffic-aware durations
+        """
         if departure_time is None:
             departure_time = datetime.now()
+            
         if self.cache:
             cached_result = self.cache.get(points, departure_time)
             if cached_result is not None:
                 return cached_result
+                
         locations = ':'.join([f"{lat},{lon}" for lat, lon in points])
         url = f"{self.base_url}/{locations}/json"
         
@@ -73,5 +88,6 @@ class TrafficRouter:
             raise
     
     def clear_cache(self):
+        """Clear the route cache."""
         if self.cache:
             self.cache.clear()

@@ -1,5 +1,9 @@
+"""
+Service Route Optimization
+Entry point for the route optimization system.
+"""
 from config import Config
-from models.service_planner import ServicePlanner
+from services.planner import ServicePlanner
 
 
 def main():

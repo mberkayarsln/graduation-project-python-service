@@ -1,11 +1,10 @@
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-
-from modules.traffic_router import TrafficRouter
+"""Traffic Service - handles traffic-aware routing."""
+from routing_engines.tomtom import TrafficRouter
 
 
-class TrafficService:    
+class TrafficService:
+    """Service for adding traffic data to routes."""
+    
     def __init__(self, config):
         self.config = config
         self.api_key = config.TOMTOM_API_KEY
@@ -17,6 +16,7 @@ class TrafficService:
     
     @staticmethod
     def get_departure_time():
+        """Get next 8 AM departure time."""
         from datetime import datetime, timedelta
         tomorrow_8am = datetime.now().replace(hour=8, minute=0, second=0, microsecond=0)
         if datetime.now().hour >= 8:
@@ -24,6 +24,16 @@ class TrafficService:
         return tomorrow_8am
     
     def add_traffic_data_to_route(self, route, departure_time=None):
+        """
+        Add traffic data to a route.
+        
+        Args:
+            route: Route object to enhance
+            departure_time: Departure time for traffic estimation
+        
+        Returns:
+            True if traffic data was added, False otherwise
+        """
         if not self.enabled or not self.router:
             return False
         
@@ -42,10 +52,11 @@ class TrafficService:
             return True
             
         except Exception as e:
-            print(f"   WARNING: Trafik verisi alınamadı: {e}")
+            print(f"   WARNING: Could not get traffic data: {e}")
             return False
     
     def add_traffic_data_to_routes(self, routes):
+        """Add traffic data to multiple routes."""
         if not self.enabled:
             return 0
         
@@ -59,4 +70,5 @@ class TrafficService:
         return success_count
     
     def is_enabled(self):
+        """Check if traffic service is enabled."""
         return self.enabled

@@ -1,17 +1,17 @@
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-
+"""Visualization Service - generates HTML maps for routes and clusters."""
 import folium
 
 
-class VisualizationService:    
+class VisualizationService:
+    """Service for creating Folium map visualizations."""
+    
     def __init__(self, config):
         self.config = config
         self.office_location = config.OFFICE_LOCATION
         self.cluster_colors = {}
     
     def _get_cluster_color(self, cluster_id):
+        """Generate a unique color for a cluster."""
         if cluster_id not in self.cluster_colors:
             import random
             import hashlib
@@ -22,9 +22,7 @@ class VisualizationService:
             
             golden_ratio = 0.618033988749895
             hue = int((cluster_id * golden_ratio * 360) % 360)
-            
             hue = (hue + random.randint(-30, 30)) % 360
-            
             saturation = random.randint(65, 95)
             lightness = random.randint(40, 70)
             
@@ -32,6 +30,7 @@ class VisualizationService:
         return self.cluster_colors[cluster_id]
     
     def create_employees_map(self, employees):
+        """Create a map showing all employee locations."""
         filename = "maps/employees.html"
         
         if not employees:
@@ -44,7 +43,7 @@ class VisualizationService:
         
         folium.Marker(
             location=self.office_location,
-            popup="<b>Ofis</b>",
+            popup="<b>Office</b>",
             icon=folium.Icon(color='red', icon='home', prefix='fa')
         ).add_to(m)
         
@@ -62,6 +61,7 @@ class VisualizationService:
         return filename
     
     def create_clusters_map(self, clusters):
+        """Create a map showing clusters with their employees."""
         filename = "maps/clusters.html"
         
         all_employees = []
@@ -78,34 +78,19 @@ class VisualizationService:
         
         folium.Marker(
             location=self.office_location,
-            popup="<b>Ofis</b>",
+            popup="<b>Office</b>",
             icon=folium.Icon(color='red', icon='home', prefix='fa')
         ).add_to(m)
         
-        """ radius_km = self.config.MAX_DISTANCE_FROM_CENTER / 1000 
-        
+        # Add cluster centers
         for cluster in clusters:
-            color = self._get_cluster_color(cluster.id)
-            folium.Circle(
+            folium.Marker(
                 location=cluster.center,
-                radius=self.config.MAX_DISTANCE_FROM_CENTER, 
-                color=color,
-                fill=True,
-                fillColor=color,
-                fillOpacity=0.1,
-                weight=2,
-                opacity=0.5,
-                popup=f"<b>Cluster {cluster.id}</b><br>"
-            ).add_to(m) 
-        """
-            
-        folium.Marker(
-                location=cluster.center,
-                popup=f"<b>Cluster {cluster.id}</b><br>"
-                      f"Merkez<br>",
+                popup=f"<b>Cluster {cluster.id}</b><br>Center",
                 icon=folium.Icon(color='black', icon='star', prefix='fa')
             ).add_to(m)
         
+        # Add employees colored by cluster
         for emp in all_employees:
             cluster_id = emp.cluster_id
             color = self._get_cluster_color(cluster_id)
@@ -123,6 +108,7 @@ class VisualizationService:
         return filename
     
     def create_routes_map(self, clusters):
+        """Create a map showing optimized routes for all clusters."""
         filename = "maps/optimized_routes.html"
         
         routes_dict = {}
@@ -137,7 +123,7 @@ class VisualizationService:
         
         folium.Marker(
             location=self.office_location,
-            popup="<b>Ofis</b>",
+            popup="<b>Office</b>",
             icon=folium.Icon(color='red', icon='home', prefix='fa')
         ).add_to(m)
         
@@ -145,46 +131,20 @@ class VisualizationService:
             cluster = clusters[int(cluster_id)]
             color = self._get_cluster_color(int(cluster_id))
             
+            # Draw route polyline
             if route.coordinates:
                 folium.PolyLine(
                     route.coordinates,
                     color=color,
                     weight=4,
                     opacity=0.7,
-                    popup=f"<b>Araç Rotası - Cluster {cluster_id}</b>"
+                    popup=f"<b>Vehicle Route - Cluster {cluster_id}</b>"
                 ).add_to(m)
             
+            # Draw employees
             if cluster.has_stops():
-                stop_order_map = {}
-                if route and route.stops:
-                    route_stops = route.stops[:-1] if len(route.stops) > 1 else route.stops
-                    for order, stop in enumerate(route_stops):
-                        stop_order_map[stop] = order + 1
-                
-                for i, (stop_lat, stop_lon) in enumerate(cluster.stops):
-                    load = cluster.stop_loads[i] if i < len(cluster.stop_loads) else 0
-                    stop_tuple = (stop_lat, stop_lon)
-                    display_number = stop_order_map.get(stop_tuple, i+1)
-                    
-                    """ folium.Marker(
-                        location=[stop_lat, stop_lon],
-                        popup=f"<b>Durak {display_number}</b><br>"
-                              f"Cluster {cluster_id}<br>"
-                              f"{load} çalışan",
-                        icon=folium.DivIcon(html=f'''
-                            <div style="background: {color}; color: white; 
-                                 padding: 3px 8px; border-radius: 5px; 
-                                 font-weight: bold; font-size: 14px;
-                                 border: 2px solid white;
-                                 box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
-                                {display_number}
-                            </div>
-                        ''')
-                    ).add_to(m) """
-                
                 for employee in cluster.get_active_employees():
                     stop_index, stop_location = cluster.get_employee_stop(employee)
-                    
                     target_location = employee.pickup_point if hasattr(employee, 'pickup_point') and employee.pickup_point else stop_location
                     
                     if target_location:
@@ -194,7 +154,7 @@ class VisualizationService:
                             color=color,
                             fill=True,
                             fill_opacity=0.5,
-                            popup=f"<b>ID:</b> {employee.id}<br>"
+                            popup=f"<b>ID:</b> {employee.id}"
                         ).add_to(m)
             else:
                 for i, stop in enumerate(route.stops):
@@ -204,18 +164,19 @@ class VisualizationService:
                         color=color,
                         fill=True,
                         fill_opacity=0.9,
-                        popup=f"<b>Cluster {cluster_id}</b><br>Nokta {i}"
+                        popup=f"<b>Cluster {cluster_id}</b><br>Point {i}"
                     ).add_to(m)
             
+            # Add cluster center marker
             center = cluster.center
             n_stops = len(cluster.stops) if cluster.has_stops() else len(route.stops)
             
             folium.Marker(
                 location=center,
                 popup=f"<b>Cluster {cluster_id}</b><br>"
-                      f"{n_stops} durak<br>"
+                      f"{n_stops} stops<br>"
                       f"{route.distance_km:.1f} km<br>"
-                      f"{route.duration_min:.0f} dk",
+                      f"{route.duration_min:.0f} min",
                 icon=folium.DivIcon(html=f"""
                     <div style="background: {color}; color: white; 
                          padding: 5px; border-radius: 50%; 
@@ -232,8 +193,8 @@ class VisualizationService:
         return filename
     
     def create_cluster_detail_map(self, cluster):
+        """Create a detailed map for a single cluster."""
         import os
-        
         os.makedirs("maps/detailed", exist_ok=True)
         
         filename = f"maps/detailed/cluster_{cluster.id}_detail.html"
@@ -241,58 +202,21 @@ class VisualizationService:
         
         color = self._get_cluster_color(cluster.id)
         
+        # Office marker
         folium.Marker(
             location=self.office_location,
-            popup="<b>Ofis</b>",
+            popup="<b>Office</b>",
             icon=folium.Icon(color='red', icon='home', prefix='fa')
         ).add_to(m)
         
-        """ radius_km = self.config.MAX_DISTANCE_FROM_CENTER / 1000
-        folium.Circle(
-            location=cluster.center,
-            radius=self.config.MAX_DISTANCE_FROM_CENTER,
-            color=color,
-            fill=True,
-            fillColor=color,
-            fillOpacity=0.15,
-            weight=2,
-            opacity=0.6,
-        ).add_to(m) """
-        
+        # Cluster center
         folium.Marker(
             location=cluster.center,
-            popup=f"<b>Cluster {cluster.id} Merkezi</b>",
+            popup=f"<b>Cluster {cluster.id} Center</b>",
             icon=folium.Icon(color='black', icon='star', prefix='fa')
         ).add_to(m)
         
-        if cluster.has_stops():
-            stop_order_map = {}
-            if cluster.route and cluster.route.stops:
-                route_stops = cluster.route.stops[:-1] if len(cluster.route.stops) > 1 else cluster.route.stops
-                for order, stop in enumerate(route_stops):
-                    stop_order_map[stop] = order + 1
-            
-            for i, (stop_lat, stop_lon) in enumerate(cluster.stops):
-                load = cluster.stop_loads[i] if i < len(cluster.stop_loads) else 0
-                stop_tuple = (stop_lat, stop_lon)
-                display_number = stop_order_map.get(stop_tuple, i+1)
-                
-                """ folium.Marker(
-                    location=[stop_lat, stop_lon],
-                    popup=f"<b>Durak {display_number}</b><br>"
-                          f"{load} çalışan<br>"
-                          f"Cluster {cluster.id}",
-                    icon=folium.DivIcon(html=f'''
-                        <div style="background: {color}; color: white; 
-                             padding: 5px 10px; border-radius: 8px; 
-                             font-weight: bold; font-size: 16px;
-                             border: 3px solid white;
-                             box-shadow: 0 2px 8px rgba(0,0,0,0.4);">
-                            {display_number}
-                        </div>
-                    ''')
-                ).add_to(m) """
-        
+        # Employees with pickup lines
         for employee in cluster.employees:
             if employee.excluded:
                 folium.CircleMarker(
@@ -303,18 +227,18 @@ class VisualizationService:
                     fillColor='lightgray',
                     fillOpacity=0.5,
                     popup=f"<b>ID:</b> {employee.id}<br>"
-                          f"<b>Durum:</b> Hariç tutuldu<br>"
-                          f"<b>Sebep:</b> {employee.exclusion_reason}",
+                          f"<b>Status:</b> Excluded<br>"
+                          f"<b>Reason:</b> {employee.exclusion_reason}",
                     weight=1
                 ).add_to(m)
             else:
                 stop_index, stop_location = cluster.get_employee_stop(employee)
-                
                 target_location = employee.pickup_point if hasattr(employee, 'pickup_point') and employee.pickup_point else stop_location
                 
                 if target_location:
                     walk_distance = employee.distance_to(target_location[0], target_location[1])
                     
+                    # Draw walking line
                     folium.PolyLine(
                         [employee.get_location(), target_location],
                         color=color,
@@ -324,6 +248,7 @@ class VisualizationService:
                         popup=f"Pick-up: {employee.id}"
                     ).add_to(m)
                     
+                    # Walking distance label
                     midpoint = [
                         (employee.lat + target_location[0]) / 2,
                         (employee.lon + target_location[1]) / 2
@@ -340,6 +265,7 @@ class VisualizationService:
                         """)
                     ).add_to(m)
                 
+                # Employee marker
                 folium.CircleMarker(
                     location=employee.get_location(),
                     radius=5,
@@ -348,13 +274,14 @@ class VisualizationService:
                     fillColor=color,
                     fillOpacity=0.7,
                     popup=f"<b>ID:</b> {employee.id}<br>"
-                          f"<b>Durak:</b> {stop_index+1 if stop_index is not None else 'N/A'}",
+                          f"<b>Stop:</b> {stop_index+1 if stop_index is not None else 'N/A'}",
                     weight=2
                 ).add_to(m)
                 
+                # Bus stop indicator
                 is_safe_stop = hasattr(employee, 'pickup_type') and employee.pickup_type == 'stop'
                 
-                if is_safe_stop:
+                if is_safe_stop and target_location:
                     folium.Marker(
                         location=target_location,
                         icon=folium.DivIcon(
@@ -362,56 +289,26 @@ class VisualizationService:
                             icon_size=(20, 20),
                             icon_anchor=(10, 10)
                         ),
-                        popup="Taşıt Durağı (Güvenli Nokta)"
+                        popup="Transit Stop (Safe Point)"
                     ).add_to(m)
         
+        # Route polyline
         if cluster.route and cluster.route.coordinates:
-                folium.PolyLine(
-                    cluster.route.coordinates,
-                    color=color,
-                    weight=5,
-                    opacity=0.8,
-                    popup=f"<b>Araç Rotası</b><br>"
-                          f"{cluster.route.distance_km:.1f} km<br>"
-                          f"{cluster.route.duration_min:.0f} dk"
+            folium.PolyLine(
+                cluster.route.coordinates,
+                color=color,
+                weight=5,
+                opacity=0.8,
+                popup=f"<b>Vehicle Route</b><br>"
+                      f"{cluster.route.distance_km:.1f} km<br>"
+                      f"{cluster.route.duration_min:.0f} min"
             ).add_to(m)
-        info_html = f"""
-        <div style="position: fixed; 
-                    top: 10px; right: 10px; 
-                    width: 250px; 
-                    background: white; 
-                    border: 2px solid {color};
-                    border-radius: 10px;
-                    padding: 15px;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                    z-index: 9999;">
-            <h3 style="margin: 0 0 10px 0; color: {color};">
-                Cluster {cluster.id}
-            </h3>
-            <p style="margin: 5px 0;">
-                <b>Toplam Çalışan:</b> {len(cluster.employees)}<br>
-                <b>Aktif:</b> {cluster.get_employee_count(include_excluded=False)}<br>
-                <b>Hariç:</b> {cluster.get_employee_count(include_excluded=True) - cluster.get_employee_count(include_excluded=False)}<br>
-                <b>Durak Sayısı:</b> {len(cluster.stops) if cluster.has_stops() else 0}<br>
-        """
-        
-        if cluster.route:
-            info_html += f"""
-                <b>Rota Mesafesi:</b> {cluster.route.distance_km:.1f} km<br>
-                <b>Süre:</b> {cluster.route.duration_min:.0f} dk<br>
-            """
-        
-        info_html += """
-            </p>
-        </div>
-        """
-        
-        # m.get_root().html.add_child(folium.Element(info_html))
         
         m.save(filename)
         return filename
     
     def create_all_maps(self, clusters):
+        """Create all map visualizations."""
         files = []
         all_employees = []
         for cluster in clusters:
