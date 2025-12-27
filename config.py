@@ -21,6 +21,10 @@ class Config:
     
     USE_TRAFFIC = False
     TOMTOM_API_KEY = os.getenv('TOMTOM_API_KEY')
+    GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY')
+    
+    # Routing engine: 'osrm', 'tomtom', or 'google'
+    ROUTING_ENGINE = 'google'
     
     OUTPUT_DIR = "maps"
     MAP_EMPLOYEES = f"{OUTPUT_DIR}/employees.html"
