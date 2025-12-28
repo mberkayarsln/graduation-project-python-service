@@ -2,9 +2,9 @@
 from services.location import LocationService
 from services.clustering import ClusteringService
 from services.routing import RoutingService
-from services.traffic import TrafficService
 from services.visualization import VisualizationService
 from core.vehicle import Vehicle
+from datetime import datetime, timedelta
 
 
 class ServicePlanner:
@@ -22,12 +22,19 @@ class ServicePlanner:
         self.location_service = LocationService(config)
         self.clustering_service = ClusteringService(config)
         self.routing_service = RoutingService(config)
-        self.traffic_service = TrafficService(config)
         self.visualization_service = VisualizationService(config)
         
         # State
         self.stats = {}
         self.safe_stops = []
+    
+    @staticmethod
+    def get_departure_time():
+        """Get next 8 AM departure time."""
+        tomorrow_8am = datetime.now().replace(hour=8, minute=0, second=0, microsecond=0)
+        if datetime.now().hour >= 8:
+            tomorrow_8am += timedelta(days=1)
+        return tomorrow_8am
     
     def generate_employees(self, count=None, seed=None):
         """Generate employee locations."""
@@ -118,23 +125,16 @@ class ServicePlanner:
         
         return {'total_routes': total_routes}
     
-    def optimize_routes(self, use_traffic=None, use_stops=True):
-        """Optimize routes for all clusters."""
-        use_traffic = use_traffic if use_traffic is not None else self.config.USE_TRAFFIC
-        
+    def optimize_routes(self, use_stops=True):
+        """Optimize routes for all clusters using OSRM."""
         mode = "stops" if use_stops else "employee locations"
-        print(f"[5] Creating routes ({mode}, traffic: {'ON' if use_traffic else 'OFF'})...")
+        print(f"[5] Creating routes ({mode})...")
         
         routes = []
-        api_key = self.config.TOMTOM_API_KEY if use_traffic else None
-        departure_time = self.traffic_service.get_departure_time() if use_traffic else None
         
         for cluster in self.clusters:
             route = self.routing_service.optimize_cluster_route(
                 cluster=cluster,
-                use_traffic=use_traffic,
-                api_key=api_key,
-                departure_time=departure_time,
                 use_stops=use_stops
             )
             if route:
@@ -158,12 +158,6 @@ class ServicePlanner:
         
         print(f"    OK: {len(routes)} routes created")
         
-        # Add traffic data if enabled
-        if use_traffic and self.traffic_service.is_enabled():
-            print(f"Adding traffic data...")
-            success = self.traffic_service.add_traffic_data_to_routes(routes)
-            print(f"    OK: {success}/{len(routes)} routes with traffic data")
-        
         return routes
     
     def assign_vehicles(self):
@@ -178,7 +172,7 @@ class ServicePlanner:
                 vehicle_type="Minibus"
             )
             vehicle.assign_cluster(cluster)
-            vehicle.set_departure_time(self.traffic_service.get_departure_time())
+            vehicle.set_departure_time(self.get_departure_time())
             cluster.assign_vehicle(vehicle)
             self.vehicles.append(vehicle)
         
@@ -209,14 +203,11 @@ class ServicePlanner:
         
         total_distance = 0
         total_duration = 0
-        total_traffic_delay = 0
         
         for cluster in self.clusters:
             if cluster.route:
                 total_distance += cluster.route.distance_km
                 total_duration += cluster.route.duration_min
-                if cluster.route.has_traffic_data:
-                    total_traffic_delay += cluster.route.traffic_delay_min
         
         self.stats = {
             'total_employees': total_employees,
@@ -225,9 +216,7 @@ class ServicePlanner:
             'num_clusters': len(self.clusters),
             'num_vehicles': len(self.vehicles),
             'total_distance_km': round(total_distance, 2),
-            'total_duration_min': round(total_duration, 1),
-            'total_traffic_delay_min': round(total_traffic_delay, 1),
-            'use_traffic': self.traffic_service.is_enabled()
+            'total_duration_min': round(total_duration, 1)
         }
         
         return self.stats
@@ -246,11 +235,6 @@ class ServicePlanner:
         print(f"✓ Vehicles: {stats['num_vehicles']}")
         print(f"✓ Total Distance: {stats['total_distance_km']} km")
         print(f"✓ Total Duration: {stats['total_duration_min']:.0f} minutes")
-        
-        if stats['use_traffic'] and stats['total_traffic_delay_min'] > 0:
-            print(f"⚠ Traffic Delay: +{stats['total_traffic_delay_min']:.0f} minutes")
-        
-        print(f"✓ Traffic Analysis: {'Active' if stats['use_traffic'] else 'Disabled'}")
         print("=" * 50 + "\n")
     
     def run(self):
@@ -259,7 +243,6 @@ class ServicePlanner:
         print("        SERVICE ROUTE OPTIMIZATION")
         print("=" * 50)
         print(f"   Config: {self.config.NUM_EMPLOYEES} employees, {self.config.NUM_CLUSTERS} clusters")
-        print(f"Traffic Analysis: {'✓ Active' if self.config.USE_TRAFFIC else '✗ Disabled'}")
         print("=" * 50 + "\n")
         
         print("[0] Loading Safe Pickup Points (Bus/Metro Stops)...")
