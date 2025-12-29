@@ -1,45 +1,42 @@
+"""Employee model - represents a single employee with location data."""
 import math
 
+
 class Employee:
+    """Represents an employee with geographic location and pickup assignment."""
     
     def __init__(self, id, lat, lon, name=None):
         self.id = id
         self.lat = lat
         self.lon = lon
-        self.name = name or f"Çalışan {id}"
+        self.name = name or f"Employee {id}"
         self.cluster_id = None
-        self.excluded = False
         self.excluded = False
         self.exclusion_reason = ""
         self.pickup_point = None
         self.pickup_type = "route"  # 'route' (fallback) or 'stop' (safe osm stop)
     
     def set_pickup_point(self, lat, lon, type="route"):
+        """Set the pickup point for this employee."""
         self.pickup_point = (lat, lon)
         self.pickup_type = type
     
     def distance_to(self, other_lat, other_lon):
-        R = 6371000
-        
-        phi1 = math.radians(self.lat)
-        phi2 = math.radians(other_lat)
-        dphi = math.radians(other_lat - self.lat)
-        dlambda = math.radians(other_lon - self.lon)
-        
-        a = (math.sin(dphi / 2) ** 2 + 
-             math.cos(phi1) * math.cos(phi2) * math.sin(dlambda / 2) ** 2)
-        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
-        
-        return R * c
+        """Calculate distance in meters to another point using Haversine formula."""
+        from utils.geo import haversine
+        return haversine(self.lat, self.lon, other_lat, other_lon)
     
     def exclude(self, reason):
+        """Mark employee as excluded from routing."""
         self.excluded = True
         self.exclusion_reason = reason
     
     def get_location(self):
+        """Return (lat, lon) tuple."""
         return (self.lat, self.lon)
     
     def to_dict(self):
+        """Convert to dictionary representation."""
         return {
             'id': self.id,
             'lat': self.lat,

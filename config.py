@@ -1,4 +1,3 @@
-import os
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -18,9 +17,6 @@ class Config:
     MAX_WALK_DISTANCE = 500
     SNAP_STOPS_TO_ROADS = True
     ROAD_SNAP_MAX_DISTANCE = 500
-    
-    USE_TRAFFIC = False
-    TOMTOM_API_KEY = os.getenv('TOMTOM_API_KEY')
     
     OUTPUT_DIR = "maps"
     MAP_EMPLOYEES = f"{OUTPUT_DIR}/employees.html"

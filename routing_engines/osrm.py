@@ -1,13 +1,26 @@
+"""OSRM Router - Open Source Routing Machine integration."""
 import requests
-from modules.api_cache import APICache
+from routing_engines.cache import APICache
 
 
-class OSRMRouter:    
+class OSRMRouter:
+    """Client for OSRM routing API."""
+    
     def __init__(self, base_url="https://router.project-osrm.org", cache_enabled=True):
         self.base_url = base_url
         self.cache = APICache(cache_file='data/osrm_cache.json') if cache_enabled else None
     
     def get_route(self, points, profile='driving'):
+        """
+        Get optimal route between points.
+        
+        Args:
+            points: List of (lat, lon) tuples
+            profile: Routing profile ('driving', 'walking', 'cycling')
+        
+        Returns:
+            Dict with 'coordinates', 'distance_km', 'duration_min'
+        """
         if self.cache:
             cached_result = self.cache.get(points, departure_time=None)
             if cached_result is not None:
@@ -17,8 +30,8 @@ class OSRMRouter:
         url = f"{self.base_url}/route/v1/{profile}/{coords}"
         
         params = {
-            'overview': 'full',      
-            'geometries': 'geojson' 
+            'overview': 'full',
+            'geometries': 'geojson'
         }
         
         try:
@@ -31,6 +44,7 @@ class OSRMRouter:
             
             route_data = data['routes'][0]
             
+            # Convert coordinates from [lon, lat] to [lat, lon]
             coordinates = [[coord[1], coord[0]] for coord in route_data['geometry']['coordinates']]
             
             distance_km = route_data['distance'] / 1000
@@ -55,6 +69,17 @@ class OSRMRouter:
             raise
             
     def get_distance_matrix(self, origins, destinations, profile='foot'):
+        """
+        Get distance matrix between origins and destinations.
+        
+        Args:
+            origins: List of (lat, lon) tuples
+            destinations: List of (lat, lon) tuples
+            profile: Routing profile
+        
+        Returns:
+            2D list of distances in meters
+        """
         if self.cache:
             cached_result = self.cache.get_matrix(origins, destinations, profile)
             if cached_result is not None:
@@ -71,7 +96,7 @@ class OSRMRouter:
         params = {
             'sources': source_indices,
             'destinations': dest_indices,
-            'annotations': 'distance' 
+            'annotations': 'distance'
         }
         
         try:
