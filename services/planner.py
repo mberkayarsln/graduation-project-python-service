@@ -3,6 +3,7 @@ from services.location import LocationService
 from services.clustering import ClusteringService
 from services.routing import RoutingService
 from services.visualization import VisualizationService
+from services.zone_service import ZoneService
 from core.vehicle import Vehicle
 from datetime import datetime, timedelta
 
@@ -23,9 +24,11 @@ class ServicePlanner:
         self.clustering_service = ClusteringService(config)
         self.routing_service = RoutingService(config)
         self.visualization_service = VisualizationService(config)
+        self.zone_service = ZoneService(config) if getattr(config, 'USE_ZONE_PARTITIONING', False) else None
         
         # State
         self.stats = {}
+        self.zone_assignments = {}
         self.safe_stops = []
     
     @staticmethod
@@ -47,17 +50,46 @@ class ServicePlanner:
         
         return self.employees
     
+    def create_zones(self):
+        """Create walkable zones based on road barriers."""
+        if not self.zone_service:
+            print("[2a] Zone partitioning (DISABLED)...")
+            return {}
+        
+        print("[2a] Creating zones from road barriers...")
+        self.zone_service.load_barrier_roads()
+        self.zone_service.create_zones(self.employees)
+        self.zone_assignments = self.zone_service.assign_employees_to_zones(self.employees)
+        
+        stats = self.zone_service.get_zone_stats()
+        print(f"    OK: {stats['total_zones']} zones created, {len(self.zone_assignments)} non-empty")
+        
+        return self.zone_assignments
+    
     def create_clusters(self, num_clusters=None):
         """Cluster employees into groups."""
-        num_clusters = num_clusters or self.config.NUM_CLUSTERS
-        
-        print(f"[2] Creating {num_clusters} clusters...")
-        self.clusters = self.clustering_service.cluster_employees(
-            self.employees,
-            num_clusters,
-            random_state=42
-        )
-        print(f"    OK: {len(self.clusters)} clusters created")
+        # Use zone-aware clustering if zones are available
+        if self.zone_assignments:
+            employees_per_cluster = getattr(self.config, 'EMPLOYEES_PER_CLUSTER', 20)
+            print(f"[2b] Creating zone-aware clusters (~{employees_per_cluster} employees each)...")
+            
+            self.clusters = self.clustering_service.cluster_by_zones(
+                self.zone_assignments,
+                employees_per_cluster=employees_per_cluster,
+                random_state=42
+            )
+            print(f"    OK: {len(self.clusters)} clusters created across {len(self.zone_assignments)} zones")
+        else:
+            # Fallback to traditional clustering
+            num_clusters = num_clusters or self.config.NUM_CLUSTERS
+            print(f"[2b] Creating {num_clusters} clusters...")
+            
+            self.clusters = self.clustering_service.cluster_employees(
+                self.employees,
+                num_clusters,
+                random_state=42
+            )
+            print(f"    OK: {len(self.clusters)} clusters created")
         
         return self.clusters
     
@@ -184,14 +216,29 @@ class ServicePlanner:
         """Generate HTML map visualizations."""
         print(f"[6] Generating maps...")
         
-        files = self.visualization_service.create_all_maps(self.clusters)
+        # Get zone data if available
+        zones = None
+        barrier_roads = None
+        if self.zone_service:
+            zones = self.zone_service.get_zones()
+            barrier_roads = self.zone_service.get_barrier_roads()
+        
+        files = self.visualization_service.create_all_maps(
+            self.clusters, 
+            zones=zones, 
+            barrier_roads=barrier_roads
+        )
         
         print(f"    OK: {files[0]} (employees)")
         print(f"    OK: {files[1]} (clusters)")
         print(f"    OK: {files[2]} (routes)")
         
-        if len(files) > 3:
-            print(f"    OK: {len(files) - 3} detailed cluster maps created")
+        if zones:
+            print(f"    OK: maps/zones.html (zone boundaries)")
+        
+        if len(files) > 3 + (1 if zones else 0):
+            detail_count = len(files) - 3 - (1 if zones else 0)
+            print(f"    OK: {detail_count} detailed cluster maps created")
         
         return files
     
@@ -250,6 +297,7 @@ class ServicePlanner:
         print(f"    OK: {len(self.safe_stops)} safe stops loaded from OSM")
         
         self.generate_employees()
+        self.create_zones()
         self.create_clusters()
         self.filter_employees_by_distance()
         self.generate_stops()
